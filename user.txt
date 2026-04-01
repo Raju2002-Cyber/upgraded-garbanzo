@@ -1,0 +1,357 @@
+WATER JUG
+a=int(input())
+b=int(input())
+ai=int(input())
+bi=int(input())
+af=int(input())
+bf=int(input())
+
+while ai!=af or bi!=bf:
+    op=int(input())
+    if op==1:
+        ai=a
+    elif op==2:
+        bi=b
+    elif op==3:
+        ai=0
+    elif op==4:
+        bi=0
+    elif op==5:
+        if b-bi>ai:
+            bi+=ai
+            ai=0
+        else:
+            ai-=b-bi
+            bi=b
+    elif op==6:
+        if a-ai>bi:
+            ai+=bi
+            bi=0
+        else:
+            bi-=a-ai
+            ai=a
+    elif op==7:
+        ai+=bi
+        bi=0
+    elif op==8:
+        bi+=ai
+        ai=0
+    print(ai,bi)
+
+TOWER OF HONOI---------------------------------------------
+def hanoi(n,a,b,c):
+    if n==1:
+        print(a,c)
+        return
+    hanoi(n-1,a,c,b)
+    print(a,c)
+    hanoi(n-1,b,a,c)
+
+n=int(input())
+hanoi(n,'A','B','C')
+
+tiktak---------------------------------------------------------
+
+theBoard = {'7': ' ' , '8': ' ' , '9': ' ' ,
+            '4': ' ' , '5': ' ' , '6': ' ' ,
+            '1': ' ' , '2': ' ' , '3': ' '}
+
+board_keys = []
+
+for key in theBoard:
+    board_keys.append(key)
+
+def printBoard(board):
+    print(board['7'] + '|' + board['8'] + '|' + board['9'])
+    print('-+-+-')
+    print(board['4'] + '|' + board['5'] + '|' + board['6'])
+    print('-+-+-')
+    print(board['1'] + '|' + board['2'] + '|' + board['3'])
+
+def game():
+    turn = 'X'
+    count = 0
+
+    for i in range(10):
+        printBoard(theBoard)
+        move = input()
+
+        if theBoard[move] == ' ':
+            theBoard[move] = turn
+            count += 1
+        else:
+            continue
+
+        if count >= 5:
+            if theBoard['7'] == theBoard['8'] == theBoard['9'] != ' ' or \
+               theBoard['4'] == theBoard['5'] == theBoard['6'] != ' ' or \
+               theBoard['1'] == theBoard['2'] == theBoard['3'] != ' ' or \
+               theBoard['1'] == theBoard['4'] == theBoard['7'] != ' ' or \
+               theBoard['2'] == theBoard['5'] == theBoard['8'] != ' ' or \
+               theBoard['3'] == theBoard['6'] == theBoard['9'] != ' ' or \
+               theBoard['7'] == theBoard['5'] == theBoard['3'] != ' ' or \
+               theBoard['1'] == theBoard['5'] == theBoard['9'] != ' ':
+                printBoard(theBoard)
+                break
+
+        if count == 9:
+            break
+
+        turn = 'O' if turn == 'X' else 'X'
+
+    restart = input()
+    if restart.lower() == "y":
+        for key in board_keys:
+            theBoard[key] = " "
+        game()
+
+game()
+
+
+Nqueen PROLOG--------------------------------------------------------------------
+:- use_module(library(lists)).
+
+n_queen(N, Solution) :- 
+length(Solution, N), 
+queen(Solution, N).
+
+up2N(N,N,[N]) :- !.
+up2N(K,N,[K|Tail]) :- 
+    K < N, 
+    K1 is K+1, 
+    up2N(K1, N, Tail).
+
+queen([],_).
+queen([Q|Qlist],N) :- 
+    queen(Qlist, N), 
+    up2N(1,N,Candidate_positions_for_queenQ), 
+    member(Q, Candidate_positions_for_queenQ), 
+    check_solution(Q,Qlist, 1).
+
+check_solution(_,[], _).
+check_solution(Q,[Q1|Qlist],Xdist) :- 
+    Q =\= Q1, 
+    Test is abs(Q1-Q), 
+    Test =\= Xdist, 
+    Xdist1 is Xdist + 1, 
+    check_solution(Q,Qlist,Xdist1).
+
+
+#to  run ->     n_queen(4, X).
+
+
+fam-----------------------
+female(pammi).
+female(lizza).
+female(patty).
+female(anny).
+
+male(jimmy).
+male(bobby).
+male(tomy).
+male(pitter).
+
+parent(pammi,bobby).
+parent(tomy,bobby).
+parent(tomy,lizza).
+parent(bobby,anny).
+parent(bobby,patty).
+parent(patty,jimmy).
+parent(bobby,pitter).
+parent(pitter,jimmy).
+
+mother(X,Y):-parent(X,Y),female(X).
+father(X,Y):-parent(X,Y),male(X).
+haschild(X):-parent(X,_).
+sister(X,Y):-parent(Z,X),parent(Z,Y),female(X),X\==Y.
+brother(X,Y):-parent(Z,X),parent(Z,Y),male(X),X\==Y.
+
+8-puzzle-------------------------------------------------
+import numpy as np
+import os
+
+class Node:
+    def __init__(self, node_no, data, parent, act, cost):
+        self.data = data
+        self.parent = parent
+        self.act = act
+        self.node_no = node_no
+        self.cost = cost
+
+def get_initial():
+    initial_state = np.zeros(9)
+    for i in range(9):
+        initial_state[i] = int(input())
+    return np.reshape(initial_state, (3,3))
+
+def find_index(puzzle):
+    i, j = np.where(puzzle == 0)
+    return int(i), int(j)
+
+def move_left(data):
+    i, j = find_index(data)
+    if j == 0:
+        return None
+    temp = np.copy(data)
+    temp[i][j], temp[i][j-1] = temp[i][j-1], temp[i][j]
+    return temp
+
+def move_right(data):
+    i, j = find_index(data)
+    if j == 2:
+        return None
+    temp = np.copy(data)
+    temp[i][j], temp[i][j+1] = temp[i][j+1], temp[i][j]
+    return temp
+
+def move_up(data):
+    i, j = find_index(data)
+    if i == 0:
+        return None
+    temp = np.copy(data)
+    temp[i][j], temp[i-1][j] = temp[i-1][j], temp[i][j]
+    return temp
+
+def move_down(data):
+    i, j = find_index(data)
+    if i == 2:
+        return None
+    temp = np.copy(data)
+    temp[i][j], temp[i+1][j] = temp[i+1][j], temp[i][j]
+    return temp
+
+def move_tile(action, data):
+    if action == 'up': return move_up(data)
+    if action == 'down': return move_down(data)
+    if action == 'left': return move_left(data)
+    if action == 'right': return move_right(data)
+
+def path(node):
+    p = []
+    while node:
+        p.append(node)
+        node = node.parent
+    return p[::-1]
+
+def bfs(root):
+    goal = [[1,2,3],[4,5,6],[7,8,0]]
+    q = [root]
+    visited = []
+
+    while q:
+        cur = q.pop(0)
+        if cur.data.tolist() == goal:
+            return cur
+        for m in ['up','down','left','right']:
+            temp = move_tile(m, cur.data)
+            if temp is not None and temp.tolist() not in visited:
+                visited.append(temp.tolist())
+                q.append(Node(0,temp,cur,m,0))
+
+k = get_initial()
+root = Node(0,k,None,None,0)
+goal = bfs(root)
+for n in path(goal):
+    print(n.data)
+
+8PUZZLE PROLOG-------------------------------------------------
+test(Plan):- 
+write('Initial state:'),nl, 
+Init= [at(tile4,1), at(tile3,2), at(tile8,3), at(empty,4), at(tile2,5), at(tile6,6), at(tile5,7), 
+at(tile1,8), at(tile7,9)], 
+write_sol(Init), 
+Goal= [at(tile1,1), at(tile2,2), at(tile3,3), at(tile4,4), at(empty,5), at(tile5,6), at(tile6,7), 
+at(tile7,8), at(tile8,9)], 
+nl,write('Goal state:'),nl, 
+write(Goal),nl,nl, 
+solve(Init,Goal,Plan). 
+
+solve(State, Goal, Plan):- 
+solve(State, Goal, [], Plan). 
+
+is_movable(X1,Y1) :- (1 is X1 - Y1) ; (-1 is X1 - Y1) ; (3 is X1 - Y1) ; (-3 is X1 - Y1). 
+
+solve(State, Goal, Plan, Plan):- 
+is_subset(Goal, State), nl, 
+write_sol(Plan). 
+
+solve(State, Goal, Sofar, Plan):- 
+act(Action, Preconditions, Delete, Add), 
+is_subset(Preconditions, State), 
+\+ member(Action, Sofar), 
+delete_list(Delete, State, Remainder), 
+append(Add, Remainder, NewState), 
+solve(NewState, Goal, [Action|Sofar], Plan). 
+
+act(move(X,Y,Z), 
+[at(X,Y), at(empty,Z), is_movable(Y,Z)], 
+[at(X,Y), at(empty,Z)], 
+[at(X,Z), at(empty,Y)]). 
+
+is_subset([H|T], Set):- 
+    member(H, Set), 
+    is_subset(T, Set). 
+is_subset([], _). 
+
+delete_list([H|T], Curstate, Newstate):- 
+    remove(H, Curstate, Remainder), 
+    delete_list(T, Remainder, Newstate). 
+delete_list([], Curstate, Curstate). 
+
+remove(X, [X|T], T). 
+remove(X, [H|T], [H|R]):- 
+    remove(X, T, R). 
+
+write_sol([]). 
+write_sol([H|T]):- 
+    write_sol(T), 
+    write(H), nl. 
+
+append([H|T], L1, [H|L2]):- 
+    append(T, L1, L2). 
+append([], L, L). 
+
+member(X, [X|_]). 
+member(X, [_|T]):- 
+    member(X, T). 
+
+
+#To run -> test(Plan).
+
+
+N QUEEN---------------------------------------------------
+n=int(input())
+board=[[0]*n for _ in range(n)]
+
+def isSafe(r,c):
+    for i in range(n):
+        if board[r][i]==1 or board[i][c]==1:
+            return False
+    i,j=r-1,c-1
+    while i>=0 and j>=0:
+        if board[i][j]==1:
+            return False
+        i-=1;j-=1
+    i,j=r-1,c+1
+    while i>=0 and j<n:
+        if board[i][j]==1:
+            return False
+        i-=1;j+=1
+    return True
+
+def solve(count):
+    if count==n:
+        return True
+    for i in range(n):
+        for j in range(n):
+            if isSafe(i,j):
+                board[i][j]=1
+                if solve(count+1):
+                    return True
+                board[i][j]=0
+    return False
+
+solve(0)
+for r in board:
+    print(*r)
+
