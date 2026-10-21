@@ -1,0 +1,220 @@
+PRACTICAL 09
+Exception Handling — Square Root with Custom Exception
+square_root.py
+import math
+
+class NegativeNumberError(Exception):
+    """Custom exception raised when a negative number is given for square root."""
+    def __init__(self, message="Cannot compute square root of a negative number."):
+        self.message = message
+        super().__init__(self.message)
+
+
+def compute_square_root():
+    try:
+        user_input = input("Enter a number to find its square root: ")
+        number = float(user_input)          # may raise ValueError
+
+        if number < 0:
+            raise NegativeNumberError()
+
+        result = math.sqrt(number)
+        print(f"Square root of {number} is {result}")
+
+    except NegativeNumberError as e:
+        print(f"Error: {e}")
+
+    except ValueError:
+        print("Error: Invalid input. Please enter a valid numeric value.")
+
+    finally:
+        print("Program execution completed.")
+
+
+if __name__ == "__main__":
+  compute_square_root()
+---------------------------------------------------------------------------------------------------------
+PRACTICAL 10
+Class and Constructors — Product Class
+product.py
+class Product:
+    """Represents a single product with a name, code, and price."""
+
+    def __init__(self, name, product_code, price):
+        self.name = name
+        self.product_code = product_code
+        self.price = price
+
+    def display_details(self):
+        print(f"Product Name  : {self.name}")
+        print(f"Product Code  : {self.product_code}")
+        print(f"Product Price : Rs. {self.price:.2f}")
+
+    def apply_discount(self, percent):
+        """Reduces price by the given percentage and returns the new price."""
+        discount_amount = (self.price * percent) / 100
+        self.price -= discount_amount
+        return self.price
+
+    def __str__(self):
+        return f"{self.name} ({self.product_code}) - Rs.{self.price:.2f}"
+
+test_product.py
+from product import Product
+
+class TestProduct:
+    """Tests the Product class's constructor and methods."""
+
+    def run_tests(self):
+        # Create first product using the constructor
+        p1 = Product("Wireless Mouse", "P1001", 799.00)
+        print("--- Product 1 (before discount) ---")
+        p1.display_details()
+
+        # Apply a 10% discount and display again
+        p1.apply_discount(10)
+        print("\n--- Product 1 (after 10% discount) ---")
+        p1.display_details()
+
+        # Create a second product
+        p2 = Product("Mechanical Keyboard", "P1002", 2499.00)
+        print("\n--- Product 2 ---")
+        print(p2)   # uses __str__
+
+
+if __name__ == "__main__":
+    tester = TestProduct()
+    tester.run_tests()
+
+----------------------------------------------------------------------------------------------------
+PRACTICAL 11
+Class and Objects — Banking Application
+banking_app.py
+class InsufficientFundsError(Exception):
+    """Raised when a withdrawal or transfer exceeds the available balance."""
+    def __init__(self, message="Insufficient balance for this operation."):
+        super().__init__(message)
+
+
+class Account:
+    """Represents a simple bank account."""
+
+    def __init__(self, account_holder, initial_balance=0):
+        self.account_holder = account_holder
+        self.__balance = initial_balance   # private attribute (encapsulation)
+
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("Deposit amount must be positive.")
+        self.__balance += amount
+        print(f"[{self.account_holder}] Deposited Rs.{amount:.2f}. "
+              f"New balance: Rs.{self.__balance:.2f}")
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Withdrawal amount must be positive.")
+        if amount > self.__balance:
+            raise InsufficientFundsError(
+                f"{self.account_holder} has insufficient balance "
+                f"(available: Rs.{self.__balance:.2f})")
+        self.__balance -= amount
+        print(f"[{self.account_holder}] Withdrew Rs.{amount:.2f}. "
+              f"New balance: Rs.{self.__balance:.2f}")
+
+    def transfer(self, other_account, amount):
+        """Transfers 'amount' from this account to 'other_account'."""
+        self.withdraw(amount)          # will raise if insufficient funds
+        other_account.deposit(amount)
+        print(f"Transferred Rs.{amount:.2f} from "
+              f"{self.account_holder} to {other_account.account_holder}")
+
+    def balance(self):
+        return self.__balance
+
+
+if __name__ == "__main__":
+    # Create two account objects
+    acc1 = Account("Riya", 5000)
+    acc2 = Account("Aman", 2000)
+
+    print("===== Initial Balances =====")
+    print(f"Riya: Rs.{acc1.balance():.2f}  |  Aman: Rs.{acc2.balance():.2f}")
+
+    print("\n===== Deposit Test =====")
+    acc1.deposit(1500)
+
+    print("\n===== Withdraw Test =====")
+    acc2.withdraw(500)
+
+    print("\n===== Transfer Test =====")
+    acc1.transfer(acc2, 2000)
+
+    print("\n===== Exception Test: Over-withdrawal =====")
+    try:
+        acc2.withdraw(100000)
+    except InsufficientFundsError as e:
+        print(f"Error: {e}")
+
+    print("\n===== Final Balances =====")
+    print(f"Riya: Rs.{acc1.balance():.2f}  |  Aman: Rs.{acc2.balance():.2f}")
+
+------------------------------------------------------------------------------------------------------------------
+PRACTICAL 12
+Abstract Class and Inheritance — Shape, Triangle, Rectangle
+
+shapes.py
+from abc import ABC, abstractmethod
+
+
+class Shape(ABC):
+    """Abstract base class storing two double values (x, y)."""
+
+    def __init__(self):
+        self.x = 0.0
+        self.y = 0.0
+
+    def get_data(self):
+        """Initializes base class variables from user input."""
+        self.x = float(input("Enter first value (X): "))
+        self.y = float(input("Enter second value (Y): "))
+
+    @abstractmethod
+    def display_area(self):
+        """To be overridden by every derived class."""
+        pass
+
+
+class Rectangle(Shape):
+    def display_area(self):
+        area = self.x * self.y
+        print(f"Area of Rectangle = {self.x} * {self.y} = {area}")
+
+
+class Triangle(Shape):
+    def display_area(self):
+        area = (self.x * self.y) / 2
+        print(f"Area of Triangle = ({self.x} * {self.y}) / 2 = {area}")
+
+
+def main():
+    print("Choose a shape:")
+    print("1. Rectangle")
+    print("2. Triangle")
+    choice = input("Enter choice (1/2): ")
+
+    if choice == "1":
+        shape = Rectangle()
+        print("\n-- Enter length (X) and breadth (Y) --")
+    elif choice == "2":
+        shape = Triangle()
+        print("\n-- Enter base (X) and height (Y) --")
+    else:
+        print("Invalid choice.")
+        return
+
+    shape.get_data()
+    shape.display_area()
+
+
+if __name__ == "__main__":
+    main()
