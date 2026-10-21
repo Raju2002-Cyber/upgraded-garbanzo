@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practical File — Open Source Tools and Frameworks | Practicals 9–16</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap');
+
+  :root{
+    --bg:        #0D1117;
+    --panel:     #161B22;
+    --panel-2:   #1C2330;
+    --line:      #2A3342;
+    --text:      #E6EDF3;
+    --text-dim:  #9BA9C0;
+    --text-faint:#5B6B84;
+    --py-blue:   #4B8BBE;
+    --py-yellow: #FFD43B;
+    --term-green:#4AF626;
+    --django:    #0C4B33;
+    --django-ac: #44B78B;
+    --joomla:    #F0A30A;
+    --danger:    #FF6B6B;
+    --font-d: 'Sora', sans-serif;
+    --font-b: 'IBM Plex Sans', sans-serif;
+    --font-m: 'Fira Code', monospace;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--text); font-family:var(--font-b); line-height:1.65; font-size:15.5px;}
+  ::selection{background:var(--py-yellow); color:#1a1400;}
+  a{color:var(--py-yellow); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  h1,h2,h3,h4{font-family:var(--font-d); color:#fff; letter-spacing:-0.01em;}
+  code,.mono{font-family:var(--font-m);}
+  strong{color:#fff;}
+  p{margin-bottom:10px; color:#CBD5E8;}
+  ul,ol{margin:0 0 12px 22px; color:#CBD5E8;}
+  li{margin-bottom:5px;}
+
+  /* ===== COVER PAGE ===== */
+  .cover{
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:60px 20px; text-align:center; background:radial-gradient(ellipse at 50% -10%, #14202e 0%, var(--bg) 55%);
+    border-bottom:1px solid var(--line);
+  }
+  .badge{
+    display:inline-block; background:linear-gradient(90deg, var(--py-blue), #2c5d82);
+    color:#fff; font-family:var(--font-m); font-size:0.78rem; letter-spacing:0.12em;
+    padding:8px 22px; border-radius:30px; margin-bottom:26px; font-weight:500;
+  }
+  .cover h1{font-size:2.6rem; max-width:760px; margin-bottom:14px; line-height:1.18;}
+  .cover .subtitle{color:var(--text-dim); font-size:1.1rem; margin-bottom:40px;}
+  .cover-table{width:100%; max-width:640px; border-collapse:collapse; margin-bottom:44px;}
+  .cover-table td{padding:13px 6px; border-bottom:1px solid var(--line); text-align:left; font-size:0.95rem;}
+  .cover-table td:first-child{color:var(--py-yellow); font-weight:600; width:220px; font-family:var(--font-d); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.03em;}
+  .cover-table td:last-child{color:#fff;}
+  .plist{
+    max-width:640px; width:100%; background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:24px 30px; text-align:left;
+  }
+  .plist h3{font-size:0.82rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-faint); margin-bottom:14px; font-family:var(--font-d);}
+  .plist ol{margin-left:20px;}
+  .plist li{color:var(--text-dim); margin-bottom:7px;}
+  .plist li.done{color:var(--term-green);}
+  .plist li span.tag-scope{font-family:var(--font-m); font-size:0.7rem; background:#1c3a1c; color:var(--term-green); padding:1px 8px; border-radius:10px; margin-left:8px;}
+
+  /* ===== LAYOUT ===== */
+  .app{display:grid; grid-template-columns:280px 1fr; min-height:100vh;}
+  nav.toc{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:26px 18px 60px;}
+  nav.toc::-webkit-scrollbar{width:6px;}
+  nav.toc::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
+  .toc-brand{font-family:var(--font-d); font-weight:700; font-size:1rem; color:#fff;}
+  .toc-sub{font-size:0.75rem; color:var(--text-faint); margin-bottom:20px;}
+  .toc-group-title{font-size:0.66rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-faint); margin:16px 0 6px; font-weight:600;}
+  nav.toc a{display:block; color:var(--text-dim); font-size:0.83rem; padding:5px 9px; border-radius:6px; border-left:2px solid transparent; transition:background .15s,color .15s,border-color .15s;}
+  nav.toc a:hover{background:var(--panel-2); color:var(--text);}
+  nav.toc a.active{color:var(--py-yellow); border-left-color:var(--py-yellow); background:var(--panel-2);}
+
+  main{min-width:0;}
+  .wrap{max-width:900px; margin:0 auto; padding:50px 40px 120px;}
+
+  .practical{padding-top:20px; border-top:1px solid var(--line); margin-top:60px;}
+  .practical:first-child{border-top:none; margin-top:0;}
+  .practical-head{margin-bottom:22px;}
+  .practical-eyebrow{font-family:var(--font-m); color:var(--py-yellow); font-size:0.8rem; margin-bottom:6px;}
+  .practical-head h2{font-size:1.9rem;}
+
+  section.sub{margin:26px 0; scroll-margin-top:20px;}
+  section.sub h3{font-size:1.15rem; color:var(--py-blue); margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  section.sub h4{font-size:0.98rem; color:#fff; margin:14px 0 6px;}
+
+  .callout{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--py-yellow); border-radius:var(--radius); padding:14px 16px; margin:14px 0;}
+  .callout.green{border-left-color:var(--term-green);}
+  .callout.blue{border-left-color:var(--py-blue);}
+  .callout.danger{border-left-color:var(--danger);}
+  .callout-title{font-weight:700; color:#fff; font-size:0.87rem; margin-bottom:5px;}
+
+  table{width:100%; border-collapse:collapse; margin:12px 0 20px; font-size:0.88rem;}
+  th,td{border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top;}
+  th{background:var(--panel-2); color:#fff; font-family:var(--font-d); font-weight:600; font-size:0.8rem;}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.015);}
+
+  pre{background:#060A10; border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; overflow-x:auto; font-family:var(--font-m); font-size:0.82rem; line-height:1.55; margin:12px 0; color:#D6E2F0;}
+  pre .cmt{color:#5B8A5B;}
+  pre .kw{color:#C792EA;}
+  pre .str{color:#C3E88D;}
+  pre .fn{color:#82AAFF;}
+  code.inline{background:var(--panel-2); border:1px solid var(--line); border-radius:4px; padding:1px 6px; font-size:0.85em; color:var(--py-yellow);}
+
+  .file-label{font-family:var(--font-m); font-size:0.78rem; color:var(--term-green); background:#0f1b0f; display:inline-block; padding:4px 12px; border-radius:6px 6px 0 0; border:1px solid var(--line); border-bottom:none;}
+  .file-block pre{border-radius:0 6px 6px 6px; margin-top:0;}
+
+  .ascii{background:#060A10; border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; overflow-x:auto; font-family:var(--font-m); font-size:0.8rem; color:var(--py-blue); line-height:1.5; margin:12px 0;}
+  .ascii .g{color:var(--term-green);}
+  .ascii .y{color:var(--py-yellow);}
+
+  details{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); margin-bottom:8px;}
+  details summary{cursor:pointer; padding:11px 15px; font-weight:600; color:#fff; list-style:none; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;}
+  details summary::-webkit-details-marker{display:none;}
+  details summary::after{content:'+'; color:var(--py-yellow); font-size:1.1rem;}
+  details[open] summary::after{content:'−';}
+  details .answer{padding:0 15px 13px; color:var(--text-dim); border-top:1px solid var(--line); padding-top:10px; font-size:0.9rem;}
+
+  .output-box{background:#000; border:1px solid var(--line); border-radius:var(--radius); padding:14px 18px; font-family:var(--font-m); font-size:0.85rem; color:var(--term-green); margin:12px 0; white-space:pre-wrap;}
+
+  .checklist td:nth-child(2), .checklist td:nth-child(3), .checklist td:nth-child(4), .checklist td:nth-child(5), .checklist td:nth-child(6), .checklist td:nth-child(7){color:var(--term-green); font-weight:600;}
+
+  footer{text-align:center; padding:40px 20px; color:var(--text-faint); font-size:0.8rem; border-top:1px solid var(--line);}
+
+  @media(max-width:900px){
+    .app{grid-template-columns:1fr;}
+    nav.toc{position:relative; height:auto; border-right:none; border-bottom:1px solid var(--line);}
+    .wrap{padding:30px 20px 80px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER PAGE ================= -->
+<div class="cover">
+  <div class="badge">PRACTICAL FILE</div>
+  <h1>Open Source Tools and Frameworks</h1>
+  <div class="subtitle">Python Programming — Practical Programs 9 to 16, with Complete Code, Execution &amp; Output</div>
+
+  <table class="cover-table">
+    <tr><td>Course</td><td>IMCA</td></tr>
+    <tr><td>Subject Code</td><td>05201333</td></tr>
+    <tr><td>Subject</td><td>Open Source Tools and Frameworks</td></tr>
+    <tr><td>Faculty</td><td>Prof. Adarsh Ashok</td></tr>
+    <tr><td>Institution</td><td>Parul University, Waghodia, Vadodara</td></tr>
+    <tr><td>Programming Language</td><td>Python 3</td></tr>
+  </table>
+
+  <div class="plist">
+    <h3>List of Practicals — This Document Covers 9–16</h3>
+    <ol start="9">
+      <li class="done">Exception Handling — Square Root with Custom Exception <span class="tag-scope">included</span></li>
+      <li class="done">Class and Constructors — Product Class <span class="tag-scope">included</span></li>
+      <li class="done">Class and Objects — Banking Application <span class="tag-scope">included</span></li>
+      <li class="done">Abstract Class and Inheritance — Shape, Triangle, Rectangle <span class="tag-scope">included</span></li>
+      <li class="done">Interaction with SQL — Books Database <span class="tag-scope">included</span></li>
+      <li class="done">Socket Programming — Client-Server <span class="tag-scope">included</span></li>
+      <li class="done">Django Framework — Student Information CRUD <span class="tag-scope">included</span></li>
+      <li class="done">Joomla Web Application — Library Management System <span class="tag-scope">included</span></li>
+    </ol>
+  </div>
+</div>
+
+<div class="app">
+  <!-- ================= TOC ================= -->
+  <nav class="toc" id="toc">
+    <div class="toc-brand">Practical File</div>
+    <div class="toc-sub">Practicals 9 – 16</div>
+
+    <div class="toc-group-title">Practical 9</div>
+    <a href="#p9">Exception Handling — Square Root</a>
+
+    <div class="toc-group-title">Practical 10</div>
+    <a href="#p10">Class &amp; Constructors — Product</a>
+
+    <div class="toc-group-title">Practical 11</div>
+    <a href="#p11">Class &amp; Objects — Banking App</a>
+
+    <div class="toc-group-title">Practical 12</div>
+    <a href="#p12">Abstract Class &amp; Inheritance — Shape</a>
+
+    <div class="toc-group-title">Practical 13</div>
+    <a href="#p13">SQL Interaction — Books DB</a>
+
+    <div class="toc-group-title">Practical 14</div>
+    <a href="#p14">Socket Programming</a>
+
+    <div class="toc-group-title">Practical 15</div>
+    <a href="#p15">Django — Student CRUD</a>
+
+    <div class="toc-group-title">Practical 16</div>
+    <a href="#p16">Joomla — Library Management</a>
+
+    <div class="toc-group-title">Wrap-up</div>
+    <a href="#checklist">Completeness Checklist</a>
+  </nav>
+
+  <!-- ================= MAIN ================= -->
+  <main>
+    <div class="wrap">
+
+      <!-- =====================================================================
+           PRACTICAL 9
+      ====================================================================== -->
+      <div class="practical" id="p9">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 09</div>
+          <h2>Exception Handling — Square Root with Custom Exception</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To write a Python program that computes the square root of a number entered by the user, and to handle invalid input (non-numeric values) and negative numbers using Python's exception-handling mechanism, including a custom exception class derived from <code class="inline">Exception</code>.</p>
+        </section>
+
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn how to define and raise a custom exception class, use <code class="inline">try</code>/<code class="inline">except</code>/<code class="inline">raise</code>, and validate user input defensively before performing a mathematical operation.</p>
+        </section>
+
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Create a program to find the square root of a number. The program must raise an exception when the user enters a negative number, and must also handle the case where the user enters invalid (non-numeric) input. Use the <code class="inline">Exception</code> class.</p>
+        </section>
+
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul>
+            <li>Python 3.x (interpreter)</li>
+            <li>Any code editor — VS Code, PyCharm, IDLE, or Notepad</li>
+            <li>Command Prompt / Terminal to run the script</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul>
+            <li>Basic Python syntax (variables, functions, <code class="inline">input()</code>, <code class="inline">print()</code>)</li>
+            <li>Concept of <code class="inline">try</code>-<code class="inline">except</code>-<code class="inline">raise</code></li>
+            <li>Basic class inheritance (a custom exception is a class that inherits from <code class="inline">Exception</code>)</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑥ Algorithm</h3>
+          <ol>
+            <li>Define a custom exception class <code class="inline">NegativeNumberError</code> that inherits from <code class="inline">Exception</code>.</li>
+            <li>Prompt the user to enter a number.</li>
+            <li>Attempt to convert the input to a <code class="inline">float</code>.</li>
+            <li>If the conversion fails, Python automatically raises a <code class="inline">ValueError</code> — catch it and display a friendly message.</li>
+            <li>If the conversion succeeds but the number is negative, manually <code class="inline">raise NegativeNumberError</code>.</li>
+            <li>Otherwise, compute the square root using <code class="inline">math.sqrt()</code> and display the result.</li>
+          </ol>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Flowchart</h3>
+          <pre class="ascii">
+              ┌─────────────┐
+              │    START    │
+              └──────┬──────┘
+                     ▼
+              ┌────────────────────┐
+              │ Enter a number      │
+              └──────┬─────────────┘
+                     ▼
+              ┌────────────────────┐        No (non-numeric)
+              │ Can input convert   ├──────────────┐
+              │ to float?           │              ▼
+              └──────┬─────────────┘      ┌────────────────────┐
+                     │ Yes                │ Catch ValueError    │
+                     ▼                    │ "Invalid input"     │
+              ┌────────────────────┐      └──────────┬──────────┘
+              │ number &lt; 0 ?        │                 │
+              └──────┬─────────────┘                 │
+             Yes │            │ No                    │
+                 ▼            ▼                        │
+      ┌───────────────────┐ ┌────────────────────┐    │
+      │ raise               │ │ Compute math.sqrt() │   │
+      │ NegativeNumberError │ │ Print result         │   │
+      └──────────┬──────────┘ └──────────┬──────────┘   │
+                 ▼                       ▼               ▼
+              ┌────────────────────────────────────────────┐
+              │                    END                       │
+              └────────────────────────────────────────────┘
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Complete Source Code</h3>
+          <div class="file-block">
+            <div class="file-label">square_root.py</div>
+            <pre><span class="kw">import</span> math
+
+<span class="kw">class</span> NegativeNumberError(Exception):
+    <span class="cmt">"""Custom exception raised when a negative number is given for square root."""</span>
+    <span class="kw">def</span> __init__(self, message=<span class="str">"Cannot compute square root of a negative number."</span>):
+        self.message = message
+        super().__init__(self.message)
+
+
+<span class="kw">def</span> compute_square_root():
+    <span class="kw">try</span>:
+        user_input = input(<span class="str">"Enter a number to find its square root: "</span>)
+        number = float(user_input)          <span class="cmt"># may raise ValueError</span>
+
+        <span class="kw">if</span> number &lt; 0:
+            <span class="kw">raise</span> NegativeNumberError()
+
+        result = math.sqrt(number)
+        print(<span class="str">f"Square root of {number} is {result}"</span>)
+
+    <span class="kw">except</span> NegativeNumberError <span class="kw">as</span> e:
+        print(<span class="str">f"Error: {e}"</span>)
+
+    <span class="kw">except</span> ValueError:
+        print(<span class="str">"Error: Invalid input. Please enter a valid numeric value."</span>)
+
+    <span class="kw">finally</span>:
+        print(<span class="str">"Program execution completed."</span>)
+
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    compute_square_root()</pre>
+          </div>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Code Explanation</h3>
+          <h4>Class Explanation</h4>
+          <p><code class="inline">NegativeNumberError</code> is a user-defined exception class that inherits from Python's built-in <code class="inline">Exception</code> class. It overrides <code class="inline">__init__</code> to store a custom message.</p>
+          <h4>Function Explanation</h4>
+          <p><code class="inline">compute_square_root()</code> wraps all the logic inside a <code class="inline">try</code> block so any error during conversion or validation is caught cleanly.</p>
+          <h4>Important Lines</h4>
+          <ul>
+            <li><code class="inline">float(user_input)</code> — automatically raises a built-in <code class="inline">ValueError</code> if the text cannot be converted to a number (e.g., <code class="inline">"abc"</code>).</li>
+            <li><code class="inline">raise NegativeNumberError()</code> — manually triggers our custom exception when the number is valid but negative.</li>
+            <li>The <code class="inline">finally</code> block always executes, regardless of whether an exception occurred — useful for cleanup messages.</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑩ Execution Steps</h3>
+          <ol>
+            <li>Open your code editor and create a new file named <code class="inline">square_root.py</code>.</li>
+            <li>Copy the complete code above into the file and save it.</li>
+            <li>Open a Terminal / Command Prompt and navigate to the folder containing the file, e.g. <code class="inline">cd Desktop\PracticalFile</code>.</li>
+            <li>Run the program by typing: <code class="inline">python square_root.py</code> and pressing Enter.</li>
+            <li>When prompted, type a number and press Enter.</li>
+            <li>Observe the printed result or error message.</li>
+            <li>Run the program again to test negative-number and invalid-input cases.</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue); margin-top:24px;">Test Case 1 — Valid Positive Number</h3>
+        <div class="callout"><div class="callout-title">Input</div><code class="inline">Enter a number to find its square root: 25</code></div>
+        <div class="output-box">Square root of 25.0 is 5.0
+Program execution completed.</div>
+
+        <h3 style="color:var(--py-blue); margin-top:24px;">Test Case 2 — Negative Number</h3>
+        <div class="callout"><div class="callout-title">Input</div><code class="inline">Enter a number to find its square root: -9</code></div>
+        <div class="output-box">Error: Cannot compute square root of a negative number.
+Program execution completed.</div>
+
+        <h3 style="color:var(--py-blue); margin-top:24px;">Test Case 3 — Invalid (Non-Numeric) Input</h3>
+        <div class="callout"><div class="callout-title">Input</div><code class="inline">Enter a number to find its square root: abc</code></div>
+        <div class="output-box">Error: Invalid input. Please enter a valid numeric value.
+Program execution completed.</div>
+
+        <section class="sub">
+          <h3>⑪ How It Works</h3>
+          <pre class="ascii">
+User enters value
+       │
+       ▼
+float() conversion attempted ──fails──▶ ValueError caught ──▶ "Invalid input" message
+       │ succeeds
+       ▼
+Check number &lt; 0 ──yes──▶ raise NegativeNumberError ──▶ caught ──▶ error message
+       │ no
+       ▼
+math.sqrt(number) computed ──▶ result printed
+       │
+       ▼
+finally block always runs ──▶ "Program execution completed."
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑫ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td><code class="inline">NameError: math not defined</code></td><td>Forgot to import the math module</td><td>Add <code class="inline">import math</code> at the top</td></tr>
+            <tr><td>Program crashes on text input</td><td><code class="inline">float()</code> called outside try block</td><td>Ensure conversion is inside the <code class="inline">try</code> block</td></tr>
+            <tr><td><code class="inline">python</code> not recognized</td><td>Python not added to PATH</td><td>Reinstall Python with "Add to PATH" checked, or use <code class="inline">python3</code></td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑬ Viva Questions</h3>
+          <details><summary>Q1. What is an exception in Python?</summary><div class="answer"><strong>Answer:</strong> An exception is an event that disrupts the normal flow of a program's execution, typically caused by an error at runtime (e.g., invalid input, division by zero).</div></details>
+          <details><summary>Q2. Why do we create a custom exception class instead of just using ValueError?</summary><div class="answer"><strong>Answer:</strong> A custom exception gives a more specific, descriptive name and message tailored to the exact business rule being violated (here, "negative number not allowed"), improving code readability and error handling precision.</div></details>
+          <details><summary>Q3. What is the role of the <code class="inline">raise</code> keyword?</summary><div class="answer"><strong>Answer:</strong> <code class="inline">raise</code> manually triggers an exception at a specific point in the code, interrupting normal execution and transferring control to the nearest matching <code class="inline">except</code> block.</div></details>
+          <details><summary>Q4. What is the difference between <code class="inline">except</code> and <code class="inline">finally</code>?</summary><div class="answer"><strong>Answer:</strong> <code class="inline">except</code> runs only when a matching exception occurs; <code class="inline">finally</code> always runs, whether or not an exception occurred, and is typically used for cleanup.</div></details>
+          <details><summary>Q5. Why must a custom exception class inherit from <code class="inline">Exception</code>?</summary><div class="answer"><strong>Answer:</strong> Inheriting from <code class="inline">Exception</code> ensures the class integrates properly with Python's exception-handling machinery (can be raised, caught, and displays correctly with a traceback).</div></details>
+          <details><summary>Q6. What would happen if the negative-number check were removed?</summary><div class="answer"><strong>Answer:</strong> <code class="inline">math.sqrt()</code> would raise its own built-in <code class="inline">ValueError</code> ("math domain error") for negative inputs, which is less descriptive than our custom exception.</div></details>
+          <details><summary>Q7. What does <code class="inline">super().__init__(self.message)</code> do?</summary><div class="answer"><strong>Answer:</strong> It calls the parent <code class="inline">Exception</code> class's constructor, passing the custom message so it is stored and displayed correctly when the exception is printed.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑭ Result</h3>
+          <p>Thus, a Python program to compute the square root of a number, with custom exception handling for negative numbers and built-in exception handling for invalid input, was successfully developed and executed.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned how to design and raise a custom exception class, combine it with built-in exception handling, and use <code class="inline">try</code>-<code class="inline">except</code>-<code class="inline">finally</code> to build a robust, user-friendly program.</p>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           PRACTICAL 10
+      ====================================================================== -->
+      <div class="practical" id="p10">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 10</div>
+          <h2>Class and Constructors — Product Class</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To define a <code class="inline">Product</code> class with attributes name, product code, and price, along with a constructor and methods, and to test it using a separate <code class="inline">TestProduct</code> class.</p>
+        </section>
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn how to define a class, use a constructor (<code class="inline">__init__</code>) to initialize object state, define instance methods, and create/test objects from another class/module.</p>
+        </section>
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Define a class called <code class="inline">Product</code>; each product has a name, a product code, and a price. Define variables, functions, and constructors for the <code class="inline">Product</code> class. Write a class called <code class="inline">TestProduct</code> to test the functions and constructors of the <code class="inline">Product</code> class.</p>
+        </section>
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul><li>Python 3.x</li><li>Code editor (VS Code / IDLE)</li><li>Terminal</li></ul>
+        </section>
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul><li>Classes, objects, and the <code class="inline">self</code> keyword</li><li>Constructors (<code class="inline">__init__</code>)</li><li>Instance methods</li></ul>
+        </section>
+        <section class="sub">
+          <h3>⑥ Project Structure</h3>
+          <pre class="ascii">
+Practical10_Product
+│
+├── product.py        (Product class)
+└── test_product.py   (TestProduct class + main execution)
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Complete Source Code</h3>
+          <div class="file-block">
+            <div class="file-label">product.py</div>
+            <pre><span class="kw">class</span> Product:
+    <span class="cmt">"""Represents a single product with a name, code, and price."""</span>
+
+    <span class="kw">def</span> __init__(self, name, product_code, price):
+        self.name = name
+        self.product_code = product_code
+        self.price = price
+
+    <span class="kw">def</span> display_details(self):
+        print(<span class="str">f"Product Name  : {self.name}"</span>)
+        print(<span class="str">f"Product Code  : {self.product_code}"</span>)
+        print(<span class="str">f"Product Price : Rs. {self.price:.2f}"</span>)
+
+    <span class="kw">def</span> apply_discount(self, percent):
+        <span class="cmt">"""Reduces price by the given percentage and returns the new price."""</span>
+        discount_amount = (self.price * percent) / 100
+        self.price -= discount_amount
+        <span class="kw">return</span> self.price
+
+    <span class="kw">def</span> __str__(self):
+        <span class="kw">return</span> <span class="str">f"{self.name} ({self.product_code}) - Rs.{self.price:.2f}"</span></pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">test_product.py</div>
+            <pre><span class="kw">from</span> product <span class="kw">import</span> Product
+
+<span class="kw">class</span> TestProduct:
+    <span class="cmt">"""Tests the Product class's constructor and methods."""</span>
+
+    <span class="kw">def</span> run_tests(self):
+        <span class="cmt"># Create first product using the constructor</span>
+        p1 = Product(<span class="str">"Wireless Mouse"</span>, <span class="str">"P1001"</span>, 799.00)
+        print(<span class="str">"--- Product 1 (before discount) ---"</span>)
+        p1.display_details()
+
+        <span class="cmt"># Apply a 10% discount and display again</span>
+        p1.apply_discount(10)
+        print(<span class="str">"\n--- Product 1 (after 10% discount) ---"</span>)
+        p1.display_details()
+
+        <span class="cmt"># Create a second product</span>
+        p2 = Product(<span class="str">"Mechanical Keyboard"</span>, <span class="str">"P1002"</span>, 2499.00)
+        print(<span class="str">"\n--- Product 2 ---"</span>)
+        print(p2)   <span class="cmt"># uses __str__</span>
+
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    tester = TestProduct()
+    tester.run_tests()</pre>
+          </div>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Code Explanation</h3>
+          <h4>Class Explanation</h4>
+          <p><code class="inline">Product</code> models a real-world product; its constructor initializes all three attributes at object-creation time. <code class="inline">TestProduct</code> is a separate driver class purely for testing — this separation (class vs. test class) mirrors real-world unit testing practice.</p>
+          <h4>Method Explanation</h4>
+          <ul>
+            <li><code class="inline">display_details()</code> — prints all three attributes in a readable format.</li>
+            <li><code class="inline">apply_discount(percent)</code> — demonstrates a method that modifies object state and returns a value.</li>
+            <li><code class="inline">__str__</code> — a "dunder" method that controls how the object appears when passed to <code class="inline">print()</code>.</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Execution Steps</h3>
+          <ol>
+            <li>Create a folder named <code class="inline">Practical10_Product</code>.</li>
+            <li>Inside it, create <code class="inline">product.py</code> and paste the <code class="inline">Product</code> class code.</li>
+            <li>Create <code class="inline">test_product.py</code> in the <strong>same folder</strong> and paste the test code.</li>
+            <li>Open a terminal in that folder.</li>
+            <li>Run: <code class="inline">python test_product.py</code></li>
+            <li>Observe the output for both products.</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue);">Expected Output</h3>
+        <div class="output-box">--- Product 1 (before discount) ---
+Product Name  : Wireless Mouse
+Product Code  : P1001
+Product Price : Rs. 799.00
+
+--- Product 1 (after 10% discount) ---
+Product Name  : Wireless Mouse
+Product Code  : P1001
+Product Price : Rs. 719.10
+
+--- Product 2 ---
+Mechanical Keyboard (P1002) - Rs.2499.00</div>
+
+        <section class="sub">
+          <h3>⑩ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td><code class="inline">ModuleNotFoundError: No module named 'product'</code></td><td><code class="inline">product.py</code> and <code class="inline">test_product.py</code> are in different folders</td><td>Keep both files in the same directory</td></tr>
+            <tr><td><code class="inline">TypeError: missing positional argument</code></td><td>Forgot to pass all constructor arguments</td><td>Always supply name, product_code, and price when creating a <code class="inline">Product</code></td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑪ Viva Questions</h3>
+          <details><summary>Q1. What is a constructor in Python?</summary><div class="answer"><strong>Answer:</strong> A constructor is a special method, <code class="inline">__init__</code>, automatically called when an object is created; it initializes the object's attributes.</div></details>
+          <details><summary>Q2. What does <code class="inline">self</code> represent?</summary><div class="answer"><strong>Answer:</strong> <code class="inline">self</code> refers to the current instance of the class, allowing methods to access and modify that specific object's attributes.</div></details>
+          <details><summary>Q3. Why is <code class="inline">TestProduct</code> written as a separate class?</summary><div class="answer"><strong>Answer:</strong> To separate the logic of the class being tested from the testing logic itself — a common software-engineering practice that keeps code organized and reusable.</div></details>
+          <details><summary>Q4. What is the purpose of the <code class="inline">__str__</code> method?</summary><div class="answer"><strong>Answer:</strong> It defines a human-readable string representation of an object, used automatically by <code class="inline">print()</code> and <code class="inline">str()</code>.</div></details>
+          <details><summary>Q5. Can a class have more than one constructor in Python?</summary><div class="answer"><strong>Answer:</strong> Not in the traditional overloading sense; Python allows only one <code class="inline">__init__</code> per class, but default parameter values can simulate multiple constructor behaviours.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑫ Result</h3>
+          <p>Thus, the <code class="inline">Product</code> class with constructor and methods was successfully defined and tested using the <code class="inline">TestProduct</code> class.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned to design a class with a constructor and instance methods, and to validate its behaviour using a separate tester class.</p>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           PRACTICAL 11
+      ====================================================================== -->
+      <div class="practical" id="p11">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 11</div>
+          <h2>Class and Objects — Banking Application</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To create a banking application using a class <code class="inline">Account</code> with <code class="inline">deposit()</code>, <code class="inline">withdraw()</code>, <code class="inline">transfer()</code>, and <code class="inline">balance()</code> functions, tested using at least two objects, with exception handling.</p>
+        </section>
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn to model a real-world entity (a bank account) as a class, implement inter-object interaction (transfer between two accounts), and apply exception handling for invalid operations (e.g., insufficient balance).</p>
+        </section>
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Write a program to create a banking application. Create a class <code class="inline">Account</code> which has <code class="inline">deposit()</code>, <code class="inline">withdraw()</code>, <code class="inline">transfer()</code>, and <code class="inline">balance()</code> functions. Create a minimum of two objects to test and validate the above functions. Handle exceptions if any.</p>
+        </section>
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul><li>Python 3.x</li><li>Code editor</li><li>Terminal</li></ul>
+        </section>
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul><li>Classes and objects</li><li>Custom exceptions</li><li>Method interaction between two objects of the same class</li></ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑥ Complete Source Code</h3>
+          <div class="file-block">
+            <div class="file-label">banking_app.py</div>
+            <pre><span class="kw">class</span> InsufficientFundsError(Exception):
+    <span class="cmt">"""Raised when a withdrawal or transfer exceeds the available balance."""</span>
+    <span class="kw">def</span> __init__(self, message=<span class="str">"Insufficient balance for this operation."</span>):
+        super().__init__(message)
+
+
+<span class="kw">class</span> Account:
+    <span class="cmt">"""Represents a simple bank account."""</span>
+
+    <span class="kw">def</span> __init__(self, account_holder, initial_balance=0):
+        self.account_holder = account_holder
+        self.__balance = initial_balance   <span class="cmt"># private attribute (encapsulation)</span>
+
+    <span class="kw">def</span> deposit(self, amount):
+        <span class="kw">if</span> amount &lt;= 0:
+            <span class="kw">raise</span> ValueError(<span class="str">"Deposit amount must be positive."</span>)
+        self.__balance += amount
+        print(<span class="str">f"[{self.account_holder}] Deposited Rs.{amount:.2f}. "</span>
+              <span class="str">f"New balance: Rs.{self.__balance:.2f}"</span>)
+
+    <span class="kw">def</span> withdraw(self, amount):
+        <span class="kw">if</span> amount &lt;= 0:
+            <span class="kw">raise</span> ValueError(<span class="str">"Withdrawal amount must be positive."</span>)
+        <span class="kw">if</span> amount &gt; self.__balance:
+            <span class="kw">raise</span> InsufficientFundsError(
+                <span class="str">f"{self.account_holder} has insufficient balance "</span>
+                <span class="str">f"(available: Rs.{self.__balance:.2f})"</span>)
+        self.__balance -= amount
+        print(<span class="str">f"[{self.account_holder}] Withdrew Rs.{amount:.2f}. "</span>
+              <span class="str">f"New balance: Rs.{self.__balance:.2f}"</span>)
+
+    <span class="kw">def</span> transfer(self, other_account, amount):
+        <span class="cmt">"""Transfers 'amount' from this account to 'other_account'."""</span>
+        self.withdraw(amount)          <span class="cmt"># will raise if insufficient funds</span>
+        other_account.deposit(amount)
+        print(<span class="str">f"Transferred Rs.{amount:.2f} from "</span>
+              <span class="str">f"{self.account_holder} to {other_account.account_holder}"</span>)
+
+    <span class="kw">def</span> balance(self):
+        <span class="kw">return</span> self.__balance
+
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    <span class="cmt"># Create two account objects</span>
+    acc1 = Account(<span class="str">"Riya"</span>, 5000)
+    acc2 = Account(<span class="str">"Aman"</span>, 2000)
+
+    print(<span class="str">"===== Initial Balances ====="</span>)
+    print(<span class="str">f"Riya: Rs.{acc1.balance():.2f}  |  Aman: Rs.{acc2.balance():.2f}"</span>)
+
+    print(<span class="str">"\n===== Deposit Test ====="</span>)
+    acc1.deposit(1500)
+
+    print(<span class="str">"\n===== Withdraw Test ====="</span>)
+    acc2.withdraw(500)
+
+    print(<span class="str">"\n===== Transfer Test ====="</span>)
+    acc1.transfer(acc2, 2000)
+
+    print(<span class="str">"\n===== Exception Test: Over-withdrawal ====="</span>)
+    <span class="kw">try</span>:
+        acc2.withdraw(100000)
+    <span class="kw">except</span> InsufficientFundsError <span class="kw">as</span> e:
+        print(<span class="str">f"Error: {e}"</span>)
+
+    print(<span class="str">"\n===== Final Balances ====="</span>)
+    print(<span class="str">f"Riya: Rs.{acc1.balance():.2f}  |  Aman: Rs.{acc2.balance():.2f}"</span>)</pre>
+          </div>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Code Explanation</h3>
+          <h4>Class Explanation</h4>
+          <p><code class="inline">Account</code> encapsulates the balance as a <strong>private attribute</strong> (<code class="inline">__balance</code>) so it cannot be modified directly from outside the class — it can only change through <code class="inline">deposit()</code>, <code class="inline">withdraw()</code>, or <code class="inline">transfer()</code>.</p>
+          <h4>Method Explanation</h4>
+          <ul>
+            <li><code class="inline">deposit(amount)</code> — validates the amount is positive, then increases the balance.</li>
+            <li><code class="inline">withdraw(amount)</code> — validates the amount and raises <code class="inline">InsufficientFundsError</code> if funds are insufficient.</li>
+            <li><code class="inline">transfer(other_account, amount)</code> — demonstrates <strong>object-to-object interaction</strong>: it calls <code class="inline">withdraw()</code> on itself and <code class="inline">deposit()</code> on the other <code class="inline">Account</code> object.</li>
+            <li><code class="inline">balance()</code> — a getter method that safely exposes the private balance.</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Flowchart — transfer() Logic</h3>
+          <pre class="ascii">
+        ┌─────────────┐
+        │    START    │
+        └──────┬──────┘
+               ▼
+        ┌───────────────────────┐
+        │ Call A.transfer(B, amt)│
+        └──────┬─────────────────┘
+               ▼
+        ┌───────────────────────┐    No (amt &gt; balance)
+        │ A.withdraw(amt) OK?    ├───────────────┐
+        └──────┬─────────────────┘               ▼
+               │ Yes                    ┌────────────────────┐
+               ▼                        │ raise               │
+        ┌───────────────────────┐       │ InsufficientFunds   │
+        │ B.deposit(amt)         │       │ Error                │
+        └──────┬─────────────────┘       └──────────┬──────────┘
+               ▼                                    ▼
+        ┌───────────────────────────────────────────────┐
+        │                    END                          │
+        └─────────────────────────────────────────────────┘
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Execution Steps</h3>
+          <ol>
+            <li>Create a file named <code class="inline">banking_app.py</code>.</li>
+            <li>Paste the complete code above.</li>
+            <li>Open a terminal in the file's folder.</li>
+            <li>Run: <code class="inline">python banking_app.py</code></li>
+            <li>Observe deposit, withdraw, transfer, and the deliberate over-withdrawal exception test.</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue);">Expected Output</h3>
+        <div class="output-box">===== Initial Balances =====
+Riya: Rs.5000.00  |  Aman: Rs.2000.00
+
+===== Deposit Test =====
+[Riya] Deposited Rs.1500.00. New balance: Rs.6500.00
+
+===== Withdraw Test =====
+[Aman] Withdrew Rs.500.00. New balance: Rs.1500.00
+
+===== Transfer Test =====
+[Riya] Withdrew Rs.2000.00. New balance: Rs.4500.00
+[Aman] Deposited Rs.2000.00. New balance: Rs.3500.00
+Transferred Rs.2000.00 from Riya to Aman
+
+===== Exception Test: Over-withdrawal =====
+Error: Aman has insufficient balance (available: Rs.3500.00)
+
+===== Final Balances =====
+Riya: Rs.4500.00  |  Aman: Rs.3500.00</div>
+
+        <section class="sub">
+          <h3>⑩ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td><code class="inline">AttributeError: 'Account' object has no attribute '__balance'</code></td><td>Trying to access <code class="inline">__balance</code> directly from outside the class</td><td>Always use <code class="inline">balance()</code> method (Python name-mangles private attributes)</td></tr>
+            <tr><td>Program crashes on over-withdrawal</td><td>Exception not caught with try/except</td><td>Wrap the risky call in a <code class="inline">try</code>/<code class="inline">except InsufficientFundsError</code> block</td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑪ Viva Questions</h3>
+          <details><summary>Q1. Why is <code class="inline">__balance</code> prefixed with double underscores?</summary><div class="answer"><strong>Answer:</strong> The double underscore triggers Python's name-mangling, making the attribute effectively private and preventing accidental direct access/modification from outside the class — this is <strong>encapsulation</strong>.</div></details>
+          <details><summary>Q2. How does <code class="inline">transfer()</code> demonstrate object interaction?</summary><div class="answer"><strong>Answer:</strong> It calls <code class="inline">withdraw()</code> on the calling object and <code class="inline">deposit()</code> on a different <code class="inline">Account</code> object passed as a parameter, showing two objects of the same class cooperating.</div></details>
+          <details><summary>Q3. What happens if <code class="inline">withdraw()</code> raises an exception inside <code class="inline">transfer()</code>?</summary><div class="answer"><strong>Answer:</strong> The exception propagates up and stops the <code class="inline">deposit()</code> call from executing, ensuring the transaction is not partially completed.</div></details>
+          <details><summary>Q4. Why use a custom exception instead of a generic one?</summary><div class="answer"><strong>Answer:</strong> A custom, named exception like <code class="inline">InsufficientFundsError</code> makes the error's meaning explicit and lets calling code catch this specific error type separately from other errors.</div></details>
+          <details><summary>Q5. What is encapsulation, and where is it used in this practical?</summary><div class="answer"><strong>Answer:</strong> Encapsulation is bundling data and the methods that operate on it while restricting direct external access; here, <code class="inline">__balance</code> is only modifiable through <code class="inline">deposit()</code>, <code class="inline">withdraw()</code>, and <code class="inline">transfer()</code>.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑫ Result</h3>
+          <p>Thus, a banking application with <code class="inline">deposit()</code>, <code class="inline">withdraw()</code>, <code class="inline">transfer()</code>, and <code class="inline">balance()</code> functions was successfully implemented and tested with two account objects, including exception handling.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned encapsulation, inter-object method calls, and how to design and raise custom exceptions to protect data integrity in a real-world-like scenario.</p>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           PRACTICAL 12
+      ====================================================================== -->
+      <div class="practical" id="p12">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 12</div>
+          <h2>Abstract Class and Inheritance — Shape, Triangle, Rectangle</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To create an abstract base class <code class="inline">Shape</code> storing two double values, derive <code class="inline">Triangle</code> and <code class="inline">Rectangle</code> classes from it, and compute/display the area of the shape entered interactively by the user.</p>
+        </section>
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn abstract classes (via Python's <code class="inline">abc</code> module), method overriding, polymorphism (overloading <code class="inline">display_area()</code> in each subclass), and interactive user input handling.</p>
+        </section>
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Create an abstract base class called <code class="inline">Shape</code> to store two double type values used to compute the area of figures. Derive <code class="inline">Triangle</code> and <code class="inline">Rectangle</code> from <code class="inline">Shape</code>. Add <code class="inline">get_data()</code> to initialize base class variables and <code class="inline">display_area()</code> to compute and display area. Override/redefine <code class="inline">display_area()</code> in each derived class. Accept dimensions interactively and display the area: Rectangle Area = X*Y; Triangle Area = (X*Y)/2.</p>
+        </section>
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul><li>Python 3.x</li><li>Code editor</li><li>Terminal</li></ul>
+        </section>
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul><li>Inheritance and method overriding</li><li>Abstract base classes (<code class="inline">abc.ABC</code>, <code class="inline">@abstractmethod</code>)</li><li>Polymorphism</li></ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑥ Complete Source Code</h3>
+          <div class="file-block">
+            <div class="file-label">shapes.py</div>
+            <pre><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+
+<span class="kw">class</span> Shape(ABC):
+    <span class="cmt">"""Abstract base class storing two double values (x, y)."""</span>
+
+    <span class="kw">def</span> __init__(self):
+        self.x = 0.0
+        self.y = 0.0
+
+    <span class="kw">def</span> get_data(self):
+        <span class="cmt">"""Initializes base class variables from user input."""</span>
+        self.x = float(input(<span class="str">"Enter first value (X): "</span>))
+        self.y = float(input(<span class="str">"Enter second value (Y): "</span>))
+
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> display_area(self):
+        <span class="cmt">"""To be overridden by every derived class."""</span>
+        pass
+
+
+<span class="kw">class</span> Rectangle(Shape):
+    <span class="kw">def</span> display_area(self):
+        area = self.x * self.y
+        print(<span class="str">f"Area of Rectangle = {self.x} * {self.y} = {area}"</span>)
+
+
+<span class="kw">class</span> Triangle(Shape):
+    <span class="kw">def</span> display_area(self):
+        area = (self.x * self.y) / 2
+        print(<span class="str">f"Area of Triangle = ({self.x} * {self.y}) / 2 = {area}"</span>)
+
+
+<span class="kw">def</span> main():
+    print(<span class="str">"Choose a shape:"</span>)
+    print(<span class="str">"1. Rectangle"</span>)
+    print(<span class="str">"2. Triangle"</span>)
+    choice = input(<span class="str">"Enter choice (1/2): "</span>)
+
+    <span class="kw">if</span> choice == <span class="str">"1"</span>:
+        shape = Rectangle()
+        print(<span class="str">"\n-- Enter length (X) and breadth (Y) --"</span>)
+    <span class="kw">elif</span> choice == <span class="str">"2"</span>:
+        shape = Triangle()
+        print(<span class="str">"\n-- Enter base (X) and height (Y) --"</span>)
+    <span class="kw">else</span>:
+        print(<span class="str">"Invalid choice."</span>)
+        <span class="kw">return</span>
+
+    shape.get_data()
+    shape.display_area()
+
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    main()</pre>
+          </div>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Code Explanation</h3>
+          <h4>Class Explanation</h4>
+          <p><code class="inline">Shape</code> is declared <strong>abstract</strong> by inheriting from <code class="inline">ABC</code> and marking <code class="inline">display_area()</code> with <code class="inline">@abstractmethod</code> — this means <code class="inline">Shape</code> itself <strong>cannot be instantiated directly</strong>; only its concrete subclasses (<code class="inline">Rectangle</code>, <code class="inline">Triangle</code>) can be.</p>
+          <h4>Method Explanation</h4>
+          <ul>
+            <li><code class="inline">get_data()</code> — defined once in the base class and inherited by both subclasses (no need to repeat it).</li>
+            <li><code class="inline">display_area()</code> — declared abstract in <code class="inline">Shape</code>, then <strong>overridden</strong> (redefined) separately in <code class="inline">Rectangle</code> and <code class="inline">Triangle</code> with different formulas — this is <strong>runtime polymorphism</strong>.</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Diagram — Class Hierarchy</h3>
+          <pre class="ascii">
+                 ┌────────────────────────┐
+                 │   Shape (abstract)      │
+                 │   x, y                  │
+                 │   get_data()            │
+                 │   display_area() [abs.] │
+                 └───────────┬─────────────┘
+                    ┌─────────┴─────────┐
+                    ▼                   ▼
+          ┌────────────────┐   ┌────────────────┐
+          │   Rectangle      │   │   Triangle      │
+          │ display_area()   │   │ display_area()  │
+          │  = x * y         │   │  = (x*y)/2      │
+          └────────────────┘   └────────────────┘
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Execution Steps</h3>
+          <ol>
+            <li>Create a file named <code class="inline">shapes.py</code> and paste the code.</li>
+            <li>Open a terminal and run: <code class="inline">python shapes.py</code></li>
+            <li>Enter <code class="inline">1</code> for Rectangle or <code class="inline">2</code> for Triangle when prompted.</li>
+            <li>Enter the two required dimension values.</li>
+            <li>Observe the computed area printed on screen.</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue);">Test Case — Rectangle</h3>
+        <div class="callout"><div class="callout-title">Input</div><code class="inline">1</code> → X = <code class="inline">5</code>, Y = <code class="inline">4</code></div>
+        <div class="output-box">Choose a shape:
+1. Rectangle
+2. Triangle
+Enter choice (1/2): 1
+
+-- Enter length (X) and breadth (Y) --
+Enter first value (X): 5
+Enter second value (Y): 4
+Area of Rectangle = 5.0 * 4.0 = 20.0</div>
+
+        <h3 style="color:var(--py-blue);">Test Case — Triangle</h3>
+        <div class="callout"><div class="callout-title">Input</div><code class="inline">2</code> → X = <code class="inline">6</code>, Y = <code class="inline">8</code></div>
+        <div class="output-box">Choose a shape:
+1. Rectangle
+2. Triangle
+Enter choice (1/2): 2
+
+-- Enter base (X) and height (Y) --
+Enter first value (X): 6
+Enter second value (Y): 8
+Area of Triangle = (6.0 * 8.0) / 2 = 24.0</div>
+
+        <section class="sub">
+          <h3>⑩ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td><code class="inline">TypeError: Can't instantiate abstract class Shape</code></td><td>Trying to create a <code class="inline">Shape()</code> object directly</td><td>Only instantiate <code class="inline">Rectangle</code> or <code class="inline">Triangle</code>, never <code class="inline">Shape</code> itself</td></tr>
+            <tr><td><code class="inline">ValueError: could not convert string to float</code></td><td>Non-numeric dimension entered</td><td>Enter numeric values only when prompted</td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑪ Viva Questions</h3>
+          <details><summary>Q1. What is an abstract class?</summary><div class="answer"><strong>Answer:</strong> A class that cannot be instantiated on its own and typically contains one or more abstract methods that must be implemented by any concrete subclass.</div></details>
+          <details><summary>Q2. What module provides abstract class support in Python?</summary><div class="answer"><strong>Answer:</strong> The <code class="inline">abc</code> module, via the <code class="inline">ABC</code> base class and the <code class="inline">@abstractmethod</code> decorator.</div></details>
+          <details><summary>Q3. What is method overriding, and where does it occur here?</summary><div class="answer"><strong>Answer:</strong> Method overriding is redefining a method in a subclass that already exists (as abstract) in the parent class. Here, <code class="inline">display_area()</code> is overridden separately in <code class="inline">Rectangle</code> and <code class="inline">Triangle</code>.</div></details>
+          <details><summary>Q4. Why is <code class="inline">get_data()</code> not overridden in the subclasses?</summary><div class="answer"><strong>Answer:</strong> Because the logic to read two numeric values is identical for both shapes, so it is defined once in the base class and reused (inherited) — this avoids code duplication.</div></details>
+          <details><summary>Q5. What would happen if we removed <code class="inline">@abstractmethod</code> from <code class="inline">display_area()</code>?</summary><div class="answer"><strong>Answer:</strong> <code class="inline">Shape</code> would become a concrete class, and Python would allow direct instantiation of <code class="inline">Shape()</code>, even without a meaningful <code class="inline">display_area()</code> implementation — defeating the design intent.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑫ Result</h3>
+          <p>Thus, an abstract <code class="inline">Shape</code> class with derived <code class="inline">Rectangle</code> and <code class="inline">Triangle</code> classes was successfully implemented, accepting interactive input and displaying the correct area using overridden methods.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned to design abstract base classes, apply method overriding, and use polymorphism to compute different formulas via a common interface.</p>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           PRACTICAL 13
+      ====================================================================== -->
+      <div class="practical" id="p13">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 13</div>
+          <h2>Interaction with SQL — Books Database</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To write a Python program that performs a simple query on a Books database — accepting <code class="inline">book_id</code>, <code class="inline">book_name</code>, and <code class="inline">author_name</code> from the user, inserting it into the <code class="inline">books_master</code> table, and retrieving/displaying all records.</p>
+        </section>
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn to connect Python to a relational database, create tables, insert user-supplied data, and run <code class="inline">SELECT</code> queries to retrieve and display results — using Python's built-in <code class="inline">sqlite3</code> module (no separate server installation required).</p>
+        </section>
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Write a Python program that performs a simple query on a Books database. Take <code class="inline">book_id</code>, <code class="inline">book_name</code>, <code class="inline">author_name</code> as input from the user. Insert the input into the <code class="inline">books_master</code> table. Also write a query to retrieve all information from <code class="inline">books_master</code> and display it in an appropriate format.</p>
+        </section>
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul>
+            <li>Python 3.x (includes the <code class="inline">sqlite3</code> module by default — no separate install needed)</li>
+            <li>Code editor / Terminal</li>
+            <li><em>Optional:</em> DB Browser for SQLite (to visually inspect the database file)</li>
+          </ul>
+          <div class="callout blue">
+            <div class="callout-title">💡 Note on database choice</div>
+            This practical uses SQLite via Python's built-in <code class="inline">sqlite3</code> module because it needs zero installation or server setup — ideal for a lab environment. The same logic applies to MySQL with minor syntax changes (using <code class="inline">mysql-connector-python</code> instead), explained in the callout after the code.
+          </div>
+        </section>
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul><li>Basic SQL (CREATE TABLE, INSERT, SELECT)</li><li>Python file/module basics</li></ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑥ Complete Source Code</h3>
+          <div class="file-block">
+            <div class="file-label">books_db.py</div>
+            <pre><span class="kw">import</span> sqlite3
+
+
+<span class="kw">def</span> create_table(cursor):
+    cursor.execute(<span class="str">"""
+        CREATE TABLE IF NOT EXISTS books_master (
+            book_id INTEGER PRIMARY KEY,
+            book_name TEXT NOT NULL,
+            author_name TEXT NOT NULL
+        )
+    """</span>)
+
+
+<span class="kw">def</span> insert_book(cursor, connection):
+    book_id = input(<span class="str">"Enter Book ID: "</span>)
+    book_name = input(<span class="str">"Enter Book Name: "</span>)
+    author_name = input(<span class="str">"Enter Author Name: "</span>)
+
+    cursor.execute(
+        <span class="str">"INSERT INTO books_master (book_id, book_name, author_name) VALUES (?, ?, ?)"</span>,
+        (book_id, book_name, author_name)
+    )
+    connection.commit()
+    print(<span class="str">"\nBook record inserted successfully!\n"</span>)
+
+
+<span class="kw">def</span> display_all_books(cursor):
+    cursor.execute(<span class="str">"SELECT book_id, book_name, author_name FROM books_master"</span>)
+    rows = cursor.fetchall()
+
+    print(<span class="str">"\n{:&lt;10} {:&lt;30} {:&lt;25}"</span>.format(<span class="str">"Book ID"</span>, <span class="str">"Book Name"</span>, <span class="str">"Author Name"</span>))
+    print(<span class="str">"-"</span> * 65)
+    <span class="kw">for</span> row <span class="kw">in</span> rows:
+        print(<span class="str">"{:&lt;10} {:&lt;30} {:&lt;25}"</span>.format(row[0], row[1], row[2]))
+
+
+<span class="kw">def</span> main():
+    connection = sqlite3.connect(<span class="str">"library.db"</span>)
+    cursor = connection.cursor()
+
+    create_table(cursor)
+
+    <span class="kw">while</span> True:
+        print(<span class="str">"\n===== BOOKS MASTER MENU ====="</span>)
+        print(<span class="str">"1. Insert a new book"</span>)
+        print(<span class="str">"2. Display all books"</span>)
+        print(<span class="str">"3. Exit"</span>)
+        choice = input(<span class="str">"Enter your choice: "</span>)
+
+        <span class="kw">if</span> choice == <span class="str">"1"</span>:
+            insert_book(cursor, connection)
+        <span class="kw">elif</span> choice == <span class="str">"2"</span>:
+            display_all_books(cursor)
+        <span class="kw">elif</span> choice == <span class="str">"3"</span>:
+            print(<span class="str">"Exiting... Goodbye!"</span>)
+            <span class="kw">break</span>
+        <span class="kw">else</span>:
+            print(<span class="str">"Invalid choice, try again."</span>)
+
+    connection.close()
+
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    main()</pre>
+          </div>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Code Explanation</h3>
+          <ul>
+            <li><code class="inline">sqlite3.connect("library.db")</code> — opens (or creates) a database file named <code class="inline">library.db</code> in the current folder.</li>
+            <li><code class="inline">CREATE TABLE IF NOT EXISTS</code> — ensures the table is created only once, even if the script runs multiple times.</li>
+            <li>The <code class="inline">?</code> placeholders in the <code class="inline">INSERT</code> statement are <strong>parameterized queries</strong> — they prevent SQL injection, unlike directly formatting user input into the SQL string.</li>
+            <li><code class="inline">connection.commit()</code> — permanently saves the inserted data to the database file.</li>
+            <li><code class="inline">cursor.fetchall()</code> — retrieves every row returned by the last executed <code class="inline">SELECT</code> query as a list of tuples.</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Diagram — Request Flow</h3>
+          <pre class="ascii">
+   User Input (book_id, book_name, author_name)
+                  │
+                  ▼
+        Python program (books_db.py)
+                  │
+         parameterized INSERT query
+                  ▼
+       SQLite database file (library.db)
+                  │
+           table: books_master
+                  │
+        SELECT * FROM books_master
+                  ▼
+       Results fetched and displayed
+                  │
+                  ▼
+             Console output
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Execution Steps</h3>
+          <ol>
+            <li>Create a file named <code class="inline">books_db.py</code> and paste the code.</li>
+            <li>Open a terminal in the same folder.</li>
+            <li>Run: <code class="inline">python books_db.py</code></li>
+            <li>A file named <code class="inline">library.db</code> will be created automatically in the same folder on first run.</li>
+            <li>Choose option <code class="inline">1</code> to insert a book; enter the requested details.</li>
+            <li>Choose option <code class="inline">2</code> to view all inserted books in a formatted table.</li>
+            <li>Choose option <code class="inline">3</code> to exit.</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue);">Sample Input/Output</h3>
+        <div class="output-box">===== BOOKS MASTER MENU =====
+1. Insert a new book
+2. Display all books
+3. Exit
+Enter your choice: 1
+Enter Book ID: 101
+Enter Book Name: The Alchemist
+Enter Author Name: Paulo Coelho
+
+Book record inserted successfully!
+
+===== BOOKS MASTER MENU =====
+1. Insert a new book
+2. Display all books
+3. Exit
+Enter your choice: 2
+
+Book ID    Book Name                      Author Name              
+-----------------------------------------------------------------
+101        The Alchemist                  Paulo Coelho             </div>
+
+        <section class="sub">
+          <h3>⑩ Using MySQL Instead (Optional Variant)</h3>
+          <p>If your lab specifically requires MySQL, install the connector using <code class="inline">pip install mysql-connector-python</code>, then replace the connection line with:</p>
+          <pre><span class="kw">import</span> mysql.connector
+connection = mysql.connector.connect(
+    host=<span class="str">"localhost"</span>, user=<span class="str">"root"</span>, password=<span class="str">"your_password"</span>, database=<span class="str">"librarydb"</span>
+)</pre>
+          <p>Create the database first in MySQL:</p>
+          <pre><span class="kw">CREATE DATABASE</span> librarydb;
+<span class="kw">USE</span> librarydb;
+<span class="kw">CREATE TABLE</span> books_master (
+    book_id <span class="kw">INT</span> PRIMARY KEY,
+    book_name <span class="kw">VARCHAR</span>(100),
+    author_name <span class="kw">VARCHAR</span>(100)
+);</pre>
+          <p>The rest of the Python logic (insert, select, display) stays the same — only the connection setup and placeholder style (<code class="inline">%s</code> instead of <code class="inline">?</code>) change for MySQL.</p>
+        </section>
+
+        <section class="sub">
+          <h3>⑪ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td><code class="inline">sqlite3.IntegrityError: UNIQUE constraint failed</code></td><td>Duplicate <code class="inline">book_id</code> inserted (it's the PRIMARY KEY)</td><td>Use a unique book ID for each insert</td></tr>
+            <tr><td>Database connection failed (MySQL variant)</td><td>Wrong username/password or MySQL server not running</td><td>Verify credentials and that MySQL service is running</td></tr>
+            <tr><td>Output columns misaligned</td><td>Very long book/author names</td><td>Increase the width in the <code class="inline">format()</code> string</td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑫ Viva Questions</h3>
+          <details><summary>Q1. Why use parameterized queries (<code class="inline">?</code> placeholders) instead of string formatting?</summary><div class="answer"><strong>Answer:</strong> Parameterized queries prevent SQL injection attacks by treating user input strictly as data, not executable SQL code.</div></details>
+          <details><summary>Q2. What is the purpose of <code class="inline">connection.commit()</code>?</summary><div class="answer"><strong>Answer:</strong> It permanently writes (saves) all pending changes made during the session to the actual database file.</div></details>
+          <details><summary>Q3. What does <code class="inline">cursor.fetchall()</code> return?</summary><div class="answer"><strong>Answer:</strong> A list of tuples, where each tuple represents one row returned by the most recently executed <code class="inline">SELECT</code> query.</div></details>
+          <details><summary>Q4. Why choose SQLite for this practical instead of MySQL?</summary><div class="answer"><strong>Answer:</strong> SQLite requires no separate server installation or configuration — it stores the entire database in a single file, making it ideal for quick lab exercises.</div></details>
+          <details><summary>Q5. What does <code class="inline">CREATE TABLE IF NOT EXISTS</code> prevent?</summary><div class="answer"><strong>Answer:</strong> It prevents an error from being raised if the table already exists from a previous run of the script.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑬ Result</h3>
+          <p>Thus, a Python program to insert and retrieve book records from a <code class="inline">books_master</code> table was successfully developed and executed.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned how to connect Python with a database, execute parameterized INSERT and SELECT queries, and display query results in a formatted manner.</p>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           PRACTICAL 14
+      ====================================================================== -->
+      <div class="practical" id="p14">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 14</div>
+          <h2>Socket Programming — Client-Server</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To write a simple client-server socket program in which a client connects to a given host and port, and reads any available data sent by the server.</p>
+        </section>
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn the basics of network programming using Python's <code class="inline">socket</code> module — creating a server that listens for connections and a client that connects and reads data.</p>
+        </section>
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Write a simple client-server socket program in which a client connects to a given host and port, and reads any available data from the socket.</p>
+        </section>
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul><li>Python 3.x</li><li>Two terminal windows (one for server, one for client)</li></ul>
+        </section>
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul><li>Basic understanding of client-server architecture</li><li>Concept of IP address, port number, TCP connections</li></ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑥ Architecture Diagram</h3>
+          <pre class="ascii">
+      ┌────────────────┐                     ┌────────────────┐
+      │     SERVER      │                     │      CLIENT      │
+      │ (server.py)      │                     │ (client.py)      │
+      │                  │                     │                  │
+      │  socket()        │                     │  socket()        │
+      │  bind(host,port)│                     │  connect(host,port)
+      │  listen()        │◀────connection────▶│                  │
+      │  accept()        │                     │                  │
+      │  send(data)      │────── data ────────▶│  recv(data)      │
+      │  close()         │                     │  close()         │
+      └────────────────┘                     └────────────────┘
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Complete Source Code</h3>
+          <div class="file-block">
+            <div class="file-label">server.py</div>
+            <pre><span class="kw">import</span> socket
+
+HOST = <span class="str">"127.0.0.1"</span>   <span class="cmt"># localhost</span>
+PORT = 65432
+
+<span class="kw">def</span> start_server():
+    <span class="kw">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span class="kw">as</span> server_socket:
+        server_socket.bind((HOST, PORT))
+        server_socket.listen()
+        print(<span class="str">f"Server listening on {HOST}:{PORT} ..."</span>)
+
+        conn, addr = server_socket.accept()
+        <span class="kw">with</span> conn:
+            print(<span class="str">f"Connected by client: {addr}"</span>)
+            message = <span class="str">"Hello Client! This message is sent from the Server."</span>
+            conn.sendall(message.encode())
+            print(<span class="str">"Message sent to client."</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    start_server()</pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">client.py</div>
+            <pre><span class="kw">import</span> socket
+
+HOST = <span class="str">"127.0.0.1"</span>   <span class="cmt"># server's IP address</span>
+PORT = 65432          <span class="cmt"># server's port number</span>
+
+<span class="kw">def</span> start_client():
+    <span class="kw">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span class="kw">as</span> client_socket:
+        client_socket.connect((HOST, PORT))
+        data = client_socket.recv(1024)   <span class="cmt"># read up to 1024 bytes</span>
+        print(<span class="str">f"Received from server: {data.decode()}"</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    start_client()</pre>
+          </div>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Code Explanation</h3>
+          <ul>
+            <li><code class="inline">socket.AF_INET</code> — specifies IPv4 addressing.</li>
+            <li><code class="inline">socket.SOCK_STREAM</code> — specifies a TCP (connection-oriented, reliable) socket.</li>
+            <li><code class="inline">bind()</code> — attaches the server socket to a specific host and port.</li>
+            <li><code class="inline">listen()</code> — puts the server into listening mode, waiting for incoming connections.</li>
+            <li><code class="inline">accept()</code> — blocks until a client connects, then returns a new connection object and the client's address.</li>
+            <li><code class="inline">connect()</code> (client side) — establishes a connection to the server's host and port.</li>
+            <li><code class="inline">recv(1024)</code> — reads up to 1024 bytes of data available on the socket.</li>
+            <li>The <code class="inline">with ... as</code> syntax ensures the socket is automatically closed when the block ends.</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Execution Steps</h3>
+          <ol>
+            <li>Create two files, <code class="inline">server.py</code> and <code class="inline">client.py</code>, in the <strong>same folder</strong>.</li>
+            <li>Open <strong>Terminal Window 1</strong>, navigate to the folder, and run: <code class="inline">python server.py</code>. It will print "Server listening..." and wait.</li>
+            <li>Open a <strong>second Terminal Window 2</strong> (do not close the first), navigate to the same folder, and run: <code class="inline">python client.py</code>.</li>
+            <li>Observe: the server terminal shows "Connected by client" and "Message sent to client"; the client terminal shows the received message.</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue);">Expected Output — Server Terminal</h3>
+        <div class="output-box">Server listening on 127.0.0.1:65432 ...
+Connected by client: ('127.0.0.1', 51762)
+Message sent to client.</div>
+
+        <h3 style="color:var(--py-blue);">Expected Output — Client Terminal</h3>
+        <div class="output-box">Received from server: Hello Client! This message is sent from the Server.</div>
+
+        <section class="sub">
+          <h3>⑩ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td><code class="inline">ConnectionRefusedError</code></td><td>Client started before the server, or server not running</td><td>Always start <code class="inline">server.py</code> first, then <code class="inline">client.py</code></td></tr>
+            <tr><td><code class="inline">OSError: [Errno 98] Address already in use</code></td><td>A previous server instance is still using the port</td><td>Wait a few seconds, or change <code class="inline">PORT</code> to a different number</td></tr>
+            <tr><td>Client hangs / no output</td><td>Server crashed before sending data</td><td>Check the server terminal for errors and restart it</td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑪ Viva Questions</h3>
+          <details><summary>Q1. What is a socket?</summary><div class="answer"><strong>Answer:</strong> A socket is an endpoint for sending and receiving data across a network, identified by an IP address and a port number.</div></details>
+          <details><summary>Q2. Why must the server start before the client?</summary><div class="answer"><strong>Answer:</strong> The server must be actively <code class="inline">listen()</code>-ing on the port before a client can successfully <code class="inline">connect()</code> to it; otherwise the connection is refused.</div></details>
+          <details><summary>Q3. What is the difference between <code class="inline">SOCK_STREAM</code> and <code class="inline">SOCK_DGRAM</code>?</summary><div class="answer"><strong>Answer:</strong> <code class="inline">SOCK_STREAM</code> uses TCP — a reliable, connection-oriented protocol. <code class="inline">SOCK_DGRAM</code> uses UDP — a connectionless, faster but unreliable protocol.</div></details>
+          <details><summary>Q4. What does <code class="inline">accept()</code> return?</summary><div class="answer"><strong>Answer:</strong> A tuple containing a new socket object (used to communicate with that specific client) and the client's address (IP, port).</div></details>
+          <details><summary>Q5. Why is data encoded/decoded (<code class="inline">.encode()</code> / <code class="inline">.decode()</code>)?</summary><div class="answer"><strong>Answer:</strong> Sockets transmit raw bytes, not Python strings, so text must be encoded to bytes before sending and decoded back to a string after receiving.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑫ Result</h3>
+          <p>Thus, a simple client-server socket program was successfully implemented, where the client connected to the server on a given host and port and read the data sent by it.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned the fundamentals of TCP socket programming, including binding, listening, accepting connections, and sending/receiving data between two independent processes.</p>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           PRACTICAL 15
+      ====================================================================== -->
+      <div class="practical" id="p15">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 15</div>
+          <h2>Application Development Using Django Framework — Student Information</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To develop a Python web application using the Django framework to maintain students' information, capable of adding, updating, and deleting student records.</p>
+        </section>
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn the Model-View-Template (MVT) architecture of Django, creating models, running migrations, writing views, configuring URLs, and building basic HTML templates for full CRUD (Create, Read, Update, Delete) functionality.</p>
+        </section>
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Develop a Python application using the Django framework to maintain student information. The application must support adding, updating, and deleting student information.</p>
+        </section>
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul>
+            <li>Python 3.x</li>
+            <li>Django (installed via <code class="inline">pip install django</code>)</li>
+            <li>Code editor (VS Code recommended)</li>
+            <li>Web browser</li>
+          </ul>
+        </section>
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul><li>Basic Python</li><li>Basic HTML</li><li>Concept of MVC/MVT architecture</li></ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑥ MVT Architecture Diagram</h3>
+          <pre class="ascii">
+       Browser
+          │  HTTP Request (e.g. /students/add/)
+          ▼
+       urls.py  ── routes URL to the matching view
+          │
+          ▼
+       views.py  ── contains the business logic
+          │
+          ▼
+       models.py ── defines Student table structure
+          │
+          ▼
+       Database (SQLite, default)
+          │
+          ▼
+       views.py  ── passes data to template
+          │
+          ▼
+       templates/*.html ── renders the final page
+          │
+          ▼
+       Browser (renders HTML response)
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Step-by-Step Setup</h3>
+          <h4>Step 1: Install Django</h4>
+          <pre>pip install django</pre>
+
+          <h4>Step 2: Create the Django Project</h4>
+          <pre>django-admin startproject studentproject
+cd studentproject</pre>
+
+          <h4>Step 3: Create the App</h4>
+          <pre>python manage.py startapp students</pre>
+
+          <h4>Step 4: Register the App</h4>
+          <p>Open <code class="inline">studentproject/settings.py</code> and add <code class="inline">'students'</code> to the <code class="inline">INSTALLED_APPS</code> list:</p>
+          <pre>INSTALLED_APPS = [
+    <span class="cmt">...</span>
+    <span class="str">'students'</span>,
+]</pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Project Structure</h3>
+          <pre class="ascii">
+studentproject
+│
+├── manage.py
+├── studentproject/
+│   ├── settings.py
+│   └── urls.py
+│
+└── students/
+    ├── models.py
+    ├── views.py
+    ├── urls.py            (created manually)
+    ├── admin.py
+    └── templates/
+        └── students/
+            ├── student_list.html
+            ├── student_form.html
+            └── student_confirm_delete.html
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Complete Source Code</h3>
+
+          <div class="file-block">
+            <div class="file-label">students/models.py</div>
+            <pre><span class="kw">from</span> django.db <span class="kw">import</span> models
+
+<span class="kw">class</span> Student(models.Model):
+    name = models.CharField(max_length=100)
+    roll_number = models.CharField(max_length=20, unique=True)
+    course = models.CharField(max_length=100)
+    email = models.EmailField()
+
+    <span class="kw">def</span> __str__(self):
+        <span class="kw">return</span> self.name</pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">students/views.py</div>
+            <pre><span class="kw">from</span> django.shortcuts <span class="kw">import</span> render, redirect, get_object_or_404
+<span class="kw">from</span> .models <span class="kw">import</span> Student
+
+<span class="kw">def</span> student_list(request):
+    students = Student.objects.all()
+    <span class="kw">return</span> render(request, <span class="str">'students/student_list.html'</span>, {<span class="str">'students'</span>: students})
+
+<span class="kw">def</span> student_add(request):
+    <span class="kw">if</span> request.method == <span class="str">'POST'</span>:
+        Student.objects.create(
+            name=request.POST[<span class="str">'name'</span>],
+            roll_number=request.POST[<span class="str">'roll_number'</span>],
+            course=request.POST[<span class="str">'course'</span>],
+            email=request.POST[<span class="str">'email'</span>]
+        )
+        <span class="kw">return</span> redirect(<span class="str">'student_list'</span>)
+    <span class="kw">return</span> render(request, <span class="str">'students/student_form.html'</span>, {<span class="str">'action'</span>: <span class="str">'Add'</span>})
+
+<span class="kw">def</span> student_update(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+    <span class="kw">if</span> request.method == <span class="str">'POST'</span>:
+        student.name = request.POST[<span class="str">'name'</span>]
+        student.roll_number = request.POST[<span class="str">'roll_number'</span>]
+        student.course = request.POST[<span class="str">'course'</span>]
+        student.email = request.POST[<span class="str">'email'</span>]
+        student.save()
+        <span class="kw">return</span> redirect(<span class="str">'student_list'</span>)
+    <span class="kw">return</span> render(request, <span class="str">'students/student_form.html'</span>, {<span class="str">'student'</span>: student, <span class="str">'action'</span>: <span class="str">'Update'</span>})
+
+<span class="kw">def</span> student_delete(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+    <span class="kw">if</span> request.method == <span class="str">'POST'</span>:
+        student.delete()
+        <span class="kw">return</span> redirect(<span class="str">'student_list'</span>)
+    <span class="kw">return</span> render(request, <span class="str">'students/student_confirm_delete.html'</span>, {<span class="str">'student'</span>: student})</pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">students/urls.py (create this new file)</div>
+            <pre><span class="kw">from</span> django.urls <span class="kw">import</span> path
+<span class="kw">from</span> . <span class="kw">import</span> views
+
+urlpatterns = [
+    path(<span class="str">''</span>, views.student_list, name=<span class="str">'student_list'</span>),
+    path(<span class="str">'add/'</span>, views.student_add, name=<span class="str">'student_add'</span>),
+    path(<span class="str">'update/&lt;int:pk&gt;/'</span>, views.student_update, name=<span class="str">'student_update'</span>),
+    path(<span class="str">'delete/&lt;int:pk&gt;/'</span>, views.student_delete, name=<span class="str">'student_delete'</span>),
+]</pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">studentproject/urls.py (edit the existing file)</div>
+            <pre><span class="kw">from</span> django.contrib <span class="kw">import</span> admin
+<span class="kw">from</span> django.urls <span class="kw">import</span> path, include
+
+urlpatterns = [
+    path(<span class="str">'admin/'</span>, admin.site.urls),
+    path(<span class="str">'students/'</span>, include(<span class="str">'students.urls'</span>)),
+]</pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">students/templates/students/student_list.html</div>
+            <pre>&lt;h1&gt;Student Information&lt;/h1&gt;
+&lt;a href=<span class="str">"/students/add/"</span>&gt;+ Add New Student&lt;/a&gt;
+&lt;table border=<span class="str">"1"</span> cellpadding=<span class="str">"8"</span>&gt;
+  &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Roll No.&lt;/th&gt;&lt;th&gt;Course&lt;/th&gt;&lt;th&gt;Email&lt;/th&gt;&lt;th&gt;Actions&lt;/th&gt;&lt;/tr&gt;
+  {% for student in students %}
+  &lt;tr&gt;
+    &lt;td&gt;{{ student.name }}&lt;/td&gt;
+    &lt;td&gt;{{ student.roll_number }}&lt;/td&gt;
+    &lt;td&gt;{{ student.course }}&lt;/td&gt;
+    &lt;td&gt;{{ student.email }}&lt;/td&gt;
+    &lt;td&gt;
+      &lt;a href=<span class="str">"/students/update/{{ student.pk }}/"</span>&gt;Edit&lt;/a&gt; |
+      &lt;a href=<span class="str">"/students/delete/{{ student.pk }}/"</span>&gt;Delete&lt;/a&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  {% endfor %}
+&lt;/table&gt;</pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">students/templates/students/student_form.html</div>
+            <pre>&lt;h1&gt;{{ action }} Student&lt;/h1&gt;
+&lt;form method=<span class="str">"POST"</span>&gt;
+  {% csrf_token %}
+  Name: &lt;input type=<span class="str">"text"</span> name=<span class="str">"name"</span> value=<span class="str">"{{ student.name|default:'' }}"</span>&gt;&lt;br&gt;
+  Roll Number: &lt;input type=<span class="str">"text"</span> name=<span class="str">"roll_number"</span> value=<span class="str">"{{ student.roll_number|default:'' }}"</span>&gt;&lt;br&gt;
+  Course: &lt;input type=<span class="str">"text"</span> name=<span class="str">"course"</span> value=<span class="str">"{{ student.course|default:'' }}"</span>&gt;&lt;br&gt;
+  Email: &lt;input type=<span class="str">"email"</span> name=<span class="str">"email"</span> value=<span class="str">"{{ student.email|default:'' }}"</span>&gt;&lt;br&gt;
+  &lt;button type=<span class="str">"submit"</span>&gt;Save&lt;/button&gt;
+&lt;/form&gt;</pre>
+          </div>
+
+          <div class="file-block" style="margin-top:16px;">
+            <div class="file-label">students/templates/students/student_confirm_delete.html</div>
+            <pre>&lt;h1&gt;Delete Student&lt;/h1&gt;
+&lt;p&gt;Are you sure you want to delete &lt;strong&gt;{{ student.name }}&lt;/strong&gt;?&lt;/p&gt;
+&lt;form method=<span class="str">"POST"</span>&gt;
+  {% csrf_token %}
+  &lt;button type=<span class="str">"submit"</span>&gt;Yes, Delete&lt;/button&gt;
+  &lt;a href=<span class="str">"/students/"</span>&gt;Cancel&lt;/a&gt;
+&lt;/form&gt;</pre>
+          </div>
+        </section>
+
+        <section class="sub">
+          <h3>⑩ Code Explanation</h3>
+          <ul>
+            <li><code class="inline">models.py</code> — defines the <code class="inline">Student</code> table structure; each field maps to a database column.</li>
+            <li><code class="inline">views.py</code> — <code class="inline">student_list</code> shows all records; <code class="inline">student_add</code>/<code class="inline">student_update</code> handle form submission (POST) and display (GET); <code class="inline">student_delete</code> asks for confirmation before removing a record.</li>
+            <li><code class="inline">get_object_or_404</code> — fetches a record by primary key, automatically returning a 404 error page if it doesn't exist.</li>
+            <li><code class="inline">{% csrf_token %}</code> — a Django template tag that protects forms against Cross-Site Request Forgery attacks; required in every POST form.</li>
+            <li><code class="inline">redirect('student_list')</code> — sends the browser back to the list page after a successful add/update/delete, following the Post-Redirect-Get pattern.</li>
+          </ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑪ Execution Steps</h3>
+          <ol>
+            <li>Run migrations to create the database table: <code class="inline">python manage.py makemigrations</code> then <code class="inline">python manage.py migrate</code>.</li>
+            <li>Start the development server: <code class="inline">python manage.py runserver</code>.</li>
+            <li>Open your browser and go to: <code class="inline">http://127.0.0.1:8000/students/</code></li>
+            <li>Click <strong>"+ Add New Student"</strong>, fill in the form (Name, Roll Number, Course, Email), and click <strong>Save</strong>.</li>
+            <li>The new student appears in the list. Click <strong>Edit</strong> to update, or <strong>Delete</strong> to remove (with confirmation).</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue);">Expected Screen — Student List Page</h3>
+        <pre class="ascii">
+--------------------------------------------------------------
+                  STUDENT INFORMATION
+--------------------------------------------------------------
++ Add New Student
+
+Name        Roll No.    Course     Email                Actions
+--------------------------------------------------------------
+Riya Shah   R101        MCA        riya@example.com     Edit | Delete
+Aman Patel  R102        BCA        aman@example.com     Edit | Delete
+--------------------------------------------------------------
+        </pre>
+
+        <section class="sub">
+          <h3>⑫ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td>404 Not Found on <code class="inline">/students/</code></td><td><code class="inline">students.urls</code> not included in main <code class="inline">urls.py</code></td><td>Check <code class="inline">path('students/', include('students.urls'))</code> is present</td></tr>
+            <tr><td><code class="inline">TemplateDoesNotExist</code></td><td>Templates folder structure incorrect</td><td>Ensure templates are at <code class="inline">students/templates/students/*.html</code></td></tr>
+            <tr><td>CSRF verification failed</td><td>Missing <code class="inline">{% csrf_token %}</code> in form</td><td>Add <code class="inline">{% csrf_token %}</code> inside every <code class="inline">&lt;form method="POST"&gt;</code></td></tr>
+            <tr><td><code class="inline">no such table: students_student</code></td><td>Migrations not run</td><td>Run <code class="inline">python manage.py makemigrations</code> and <code class="inline">migrate</code></td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑬ Viva Questions</h3>
+          <details><summary>Q1. What is the MVT pattern in Django?</summary><div class="answer"><strong>Answer:</strong> Model-View-Template — Model manages data structure, View contains business logic, and Template controls presentation/HTML output. It is Django's variant of MVC.</div></details>
+          <details><summary>Q2. What is a migration in Django?</summary><div class="answer"><strong>Answer:</strong> A migration is a file that records changes to the models so Django can apply them as changes to the actual database schema.</div></details>
+          <details><summary>Q3. What is the purpose of <code class="inline">{% csrf_token %}</code>?</summary><div class="answer"><strong>Answer:</strong> It embeds a hidden security token in the form to protect against Cross-Site Request Forgery attacks; Django rejects POST requests without a valid token.</div></details>
+          <details><summary>Q4. What does <code class="inline">get_object_or_404()</code> do?</summary><div class="answer"><strong>Answer:</strong> It attempts to fetch a model instance by its primary key and automatically renders an HTTP 404 error page if no matching record is found.</div></details>
+          <details><summary>Q5. Why redirect after a POST request instead of rendering directly?</summary><div class="answer"><strong>Answer:</strong> This follows the Post-Redirect-Get (PRG) pattern, preventing duplicate form submissions if the user refreshes the page after submitting.</div></details>
+          <details><summary>Q6. What database does Django use by default?</summary><div class="answer"><strong>Answer:</strong> SQLite, configured automatically in <code class="inline">settings.py</code> under <code class="inline">DATABASES</code>, requiring no separate installation.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑭ Result</h3>
+          <p>Thus, a Django web application to maintain student information with add, update, and delete functionality was successfully developed and executed.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned Django's MVT architecture, model definition, migrations, URL routing, form handling, and template rendering to build a working CRUD web application.</p>
+        </section>
+      </div>
+
+      <!-- =====================================================================
+           PRACTICAL 16
+      ====================================================================== -->
+      <div class="practical" id="p16">
+        <div class="practical-head">
+          <div class="practical-eyebrow">PRACTICAL 16</div>
+          <h2>Web Application Development in Joomla — Library Management System</h2>
+        </div>
+
+        <section class="sub">
+          <h3>① Aim</h3>
+          <p>To develop a web application in Joomla (as a group project) implementing a <strong>Library Management System</strong> — one of the six options provided (Library Management System, Online Banking System, Placement Portal, HR Management System, Hospital Management System, Electronics Shopping).</p>
+        </section>
+        <section class="sub">
+          <h3>② Objective</h3>
+          <p>The student will learn to install and configure Joomla, understand its Content Management System (CMS) architecture (Articles, Categories, Menus, Modules, Extensions), and use it to build a functional information website without writing a full custom backend.</p>
+        </section>
+        <section class="sub">
+          <h3>③ Problem Statement</h3>
+          <p>Develop any one of the listed web applications in Joomla, in a group of 3–4 students. This solution demonstrates the <strong>Library Management System</strong> option using Joomla's core CMS features plus a cataloguing extension.</p>
+        </section>
+        <section class="sub">
+          <h3>④ Software / Tools Required</h3>
+          <ul>
+            <li><strong>XAMPP</strong> (provides Apache web server + MySQL/MariaDB database + PHP)</li>
+            <li><strong>Joomla CMS</strong> (latest stable version, downloaded from joomla.org)</li>
+            <li>Web browser</li>
+            <li><em>Optional extension:</em> a "Book Library" / catalogue component from the Joomla Extensions Directory (JED) for structured book records</li>
+          </ul>
+        </section>
+        <section class="sub">
+          <h3>⑤ Prerequisites</h3>
+          <ul><li>Basic understanding of web hosting concepts (server, database)</li><li>Basic HTML/CSS (helpful, not mandatory, since Joomla is largely no-code)</li><li>Concept of a Content Management System (CMS)</li></ul>
+        </section>
+
+        <section class="sub">
+          <h3>⑥ System Architecture Diagram</h3>
+          <pre class="ascii">
+     Browser (Librarian / Member)
+              │
+              ▼
+     Apache Web Server (via XAMPP)
+              │
+              ▼
+        Joomla CMS (PHP)
+      ┌───────────────────────┐
+      │  Articles (Book records)│
+      │  Categories (Genres)    │
+      │  Menus (Navigation)     │
+      │  Modules (Search, Login)│
+      │  Users (Members/Admin)  │
+      └───────────┬─────────────┘
+                  ▼
+        MySQL/MariaDB Database
+        (joomla_db — stores all content)
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑦ Step-by-Step Setup</h3>
+
+          <h4>Step 1: Install XAMPP</h4>
+          <p>Download XAMPP from <a href="https://www.apachefriends.org" target="_blank" rel="noopener">apachefriends.org</a> and install it. Launch the <strong>XAMPP Control Panel</strong> and click <strong>Start</strong> next to both <strong>Apache</strong> and <strong>MySQL</strong>.</p>
+
+          <h4>Step 2: Create the Database</h4>
+          <ol>
+            <li>Open your browser and go to <code class="inline">http://localhost/phpmyadmin</code>.</li>
+            <li>Click <strong>New</strong> in the left sidebar.</li>
+            <li>Enter database name: <code class="inline">library_joomla</code> and click <strong>Create</strong>.</li>
+          </ol>
+
+          <h4>Step 3: Download and Extract Joomla</h4>
+          <ol>
+            <li>Download the latest Joomla package (ZIP) from <a href="https://www.joomla.org/download.html" target="_blank" rel="noopener">joomla.org/download.html</a>.</li>
+            <li>Extract the ZIP contents into <code class="inline">C:\xampp\htdocs\library</code> (create the <code class="inline">library</code> folder if it doesn't exist).</li>
+          </ol>
+
+          <h4>Step 4: Run the Joomla Web Installer</h4>
+          <ol>
+            <li>Open your browser and go to <code class="inline">http://localhost/library</code>.</li>
+            <li>The Joomla installation wizard opens. On the <strong>Main Configuration</strong> screen, enter: Site Name = <code class="inline">"City Library Management System"</code>, Admin Email, Admin Username, and Admin Password.</li>
+            <li>On the <strong>Database Configuration</strong> screen, select <strong>MySQLi</strong>, Host Name = <code class="inline">localhost</code>, Username = <code class="inline">root</code>, Password = (blank, default XAMPP setting), Database Name = <code class="inline">library_joomla</code>.</li>
+            <li>Click <strong>Install</strong> and wait for the process to finish.</li>
+            <li>Once complete, click <strong>Remove Installation Folder</strong> (Joomla requires this before the site will run).</li>
+          </ol>
+
+          <h4>Step 5: Log Into the Joomla Administrator Panel</h4>
+          <p>Go to <code class="inline">http://localhost/library/administrator</code> and log in with the admin username/password created during installation.</p>
+        </section>
+
+        <section class="sub">
+          <h3>⑧ Building the Library Management Features</h3>
+
+          <h4>Step 6: Create Categories (Book Genres)</h4>
+          <p>In the admin panel: <strong>Content → Categories → New</strong>. Create categories such as <em>Fiction</em>, <em>Science</em>, <em>History</em>, <em>Computer Science</em>. Save each with <strong>Save &amp; Close</strong>.</p>
+
+          <h4>Step 7: Add Book Records as Articles</h4>
+          <p>Go to <strong>Content → Articles → New</strong>. For each book, fill in:</p>
+          <pre class="ascii">
+Title:      Introduction to Algorithms
+Category:   Computer Science
+Content:    Author: Cormen, Leiserson, Rivest, Stein
+            ISBN: 978-0262046305
+            Copies Available: 4
+            Shelf Location: CS-12
+          </pre>
+          <p>Click <strong>Save &amp; Close</strong>. Repeat for every book in the catalogue.</p>
+
+          <h4>Step 8: Create Navigation Menus</h4>
+          <p>Go to <strong>Menus → Main Menu → Add New Menu Item</strong>. Create items such as: <em>Home</em>, <em>Browse by Category</em> (Menu Item Type: <strong>List All Categories</strong>), <em>Search Books</em> (Menu Item Type: <strong>Search</strong>), and <em>Contact Librarian</em> (Menu Item Type: <strong>Contact → Single Contact</strong>).</p>
+
+          <h4>Step 9: Enable Search &amp; Login Modules</h4>
+          <p>Go to <strong>Content → Site Modules → New</strong>. Add a <strong>Search</strong> module (position: <em>top</em>) so members can search the catalogue by title/keyword, and a <strong>Login</strong> module (position: <em>sidebar</em>) so registered members can log in.</p>
+
+          <h4>Step 10: Set Up Member Registration (Borrow Requests)</h4>
+          <p>Go to <strong>Users → Manage → Options</strong> and enable <strong>Allow User Registration</strong>. This lets library members self-register and, combined with the Contact module, "request" a book by submitting a contact form referencing the book title.</p>
+        </section>
+
+        <section class="sub">
+          <h3>⑨ Project / Content Structure Overview</h3>
+          <pre class="ascii">
+Joomla Site: "City Library Management System"
+│
+├── Categories
+│   ├── Fiction
+│   ├── Science
+│   ├── History
+│   └── Computer Science
+│
+├── Articles (one per book)
+│   ├── Introduction to Algorithms   → Category: Computer Science
+│   ├── The Alchemist                 → Category: Fiction
+│   └── A Brief History of Time       → Category: Science
+│
+├── Menus
+│   ├── Home
+│   ├── Browse by Category
+│   ├── Search Books
+│   └── Contact Librarian
+│
+└── Modules
+    ├── Search (position: top)
+    └── Login (position: sidebar)
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑩ Execution Steps (Viewing the Live Site)</h3>
+          <ol>
+            <li>Ensure Apache and MySQL are running in the XAMPP Control Panel.</li>
+            <li>Open a browser and go to: <code class="inline">http://localhost/library</code></li>
+            <li>The front-end homepage of the Library Management System loads.</li>
+            <li>Click <strong>Browse by Category</strong> to view books grouped by genre.</li>
+            <li>Use the <strong>Search</strong> box to look up a book by title/keyword.</li>
+            <li>Click on any book article to view its full details (author, ISBN, availability).</li>
+            <li>Click <strong>Contact Librarian</strong> to submit a borrow request.</li>
+          </ol>
+        </section>
+
+        <h3 style="color:var(--py-blue);">Expected Screen — Homepage (Text Representation)</h3>
+        <pre class="ascii">
+----------------------------------------------------------
+      CITY LIBRARY MANAGEMENT SYSTEM
+----------------------------------------------------------
+[ Home ] [ Browse by Category ] [ Search Books ] [ Contact Librarian ]
+
+  Search: [ algorithms____________ ]  [ Search ]
+
+  Latest Additions:
+  ────────────────────────────────────────────────────
+  • Introduction to Algorithms   (Computer Science)
+  • The Alchemist                 (Fiction)
+  • A Brief History of Time       (Science)
+----------------------------------------------------------
+        </pre>
+
+        <section class="sub">
+          <h3>⑪ How It Works</h3>
+          <pre class="ascii">
+Member visits homepage
+        │
+        ▼
+Clicks "Browse by Category" or uses Search module
+        │
+        ▼
+Joomla queries the MySQL database for matching Articles
+        │
+        ▼
+Matching book Articles are rendered on the page
+        │
+        ▼
+Member clicks a book → full Article details shown
+        │
+        ▼
+Member submits "Contact Librarian" form to request the book
+          </pre>
+        </section>
+
+        <section class="sub">
+          <h3>⑫ Common Errors and Solutions</h3>
+          <table>
+            <tr><th>Error</th><th>Possible Cause</th><th>Solution</th></tr>
+            <tr><td>"Unable to connect to the database" during install</td><td>MySQL not running, or wrong credentials</td><td>Start MySQL in XAMPP; confirm username <code class="inline">root</code> and blank password</td></tr>
+            <tr><td>Blank white page after installation</td><td>Installation folder not removed</td><td>Delete/rename the <code class="inline">installation</code> folder inside the Joomla directory</td></tr>
+            <tr><td>404 Not Found on <code class="inline">http://localhost/library</code></td><td>Files extracted to the wrong folder</td><td>Ensure Joomla files sit directly inside <code class="inline">htdocs/library</code>, not a nested subfolder</td></tr>
+            <tr><td>Articles not appearing on the front end</td><td>Article status set to "Unpublished"</td><td>Edit the article and set Status to "Published"</td></tr>
+          </table>
+        </section>
+
+        <section class="sub">
+          <h3>⑬ Viva Questions</h3>
+          <details><summary>Q1. What is Joomla?</summary><div class="answer"><strong>Answer:</strong> Joomla is a free, open-source Content Management System (CMS) written in PHP, used to build and manage websites without writing extensive custom code.</div></details>
+          <details><summary>Q2. What is the role of XAMPP in this practical?</summary><div class="answer"><strong>Answer:</strong> XAMPP provides the local Apache web server, MySQL/MariaDB database, and PHP interpreter needed to run Joomla on a personal computer without a live web host.</div></details>
+          <details><summary>Q3. What is the difference between a Joomla Article and a Category?</summary><div class="answer"><strong>Answer:</strong> An Article is a single content item (here, one book's record); a Category is a grouping/classification that organizes multiple related Articles (here, a book genre).</div></details>
+          <details><summary>Q4. Why must the "installation" folder be removed after setup?</summary><div class="answer"><strong>Answer:</strong> For security — Joomla refuses to serve the site while the installer is present, preventing anyone from re-running the installation and overwriting the site.</div></details>
+          <details><summary>Q5. How does a Joomla Module differ from an Article?</summary><div class="answer"><strong>Answer:</strong> A Module is a small, reusable content block (e.g., Search box, Login form) displayed in a fixed position on the page layout, whereas an Article is the main page content itself.</div></details>
+          <details><summary>Q6. How would member "borrow requests" typically be handled in this simple Joomla-based system?</summary><div class="answer"><strong>Answer:</strong> Through the Contact component — members submit a request referencing the book title, which is emailed to the librarian; more advanced setups would use a dedicated library-management extension with a real request/approval workflow.</div></details>
+        </section>
+
+        <section class="sub">
+          <h3>⑭ Result</h3>
+          <p>Thus, a Library Management System web application was successfully developed in Joomla using Articles, Categories, Menus, and Modules to catalogue books and allow members to browse, search, and request them.</p>
+          <h4>Learning Outcome</h4>
+          <p>The student learned to install and configure a CMS-based web application end-to-end (server setup, database creation, content structuring, navigation, and modules) without writing custom backend code — understanding how a CMS accelerates web application delivery for content-driven systems.</p>
+        </section>
+      </div>
+
+      <!-- ================= CHECKLIST ================= -->
+      <section id="checklist" style="margin-top:70px; border-top:1px solid var(--line); padding-top:40px;">
+        <h2 style="font-size:1.7rem; margin-bottom:16px;">Final Practical Checklist</h2>
+        <table class="checklist">
+          <tr><th>Practical</th><th>Question Covered</th><th>Code Provided</th><th>Setup Explained</th><th>Execution Explained</th><th>Output Provided</th><th>Viva Provided</th></tr>
+          <tr><td>9 — Exception Handling (Square Root)</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+          <tr><td>10 — Class &amp; Constructors (Product)</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+          <tr><td>11 — Class &amp; Objects (Banking App)</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+          <tr><td>12 — Abstract Class &amp; Inheritance (Shape)</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+          <tr><td>13 — SQL Interaction (Books DB)</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+          <tr><td>14 — Socket Programming</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+          <tr><td>15 — Django (Student CRUD)</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+          <tr><td>16 — Joomla (Library Management)</td><td>YES</td><td>N/A (CMS config)</td><td>YES</td><td>YES</td><td>YES</td><td>YES</td></tr>
+        </table>
+        <p>All eight practicals (9 through 16) from the uploaded practical list have been completed in full lab-manual format, including aim, objective, setup, code, execution, output, troubleshooting, viva Q&amp;A, result, and learning outcome.</p>
+      </section>
+
+      <footer>
+        Practical File — Open Source Tools and Frameworks (05201333) · IMCA · Prof. Adarsh Ashok · Parul University, Waghodia, Vadodara
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.practical, #checklist');
+  const links = document.querySelectorAll('nav.toc a');
+  function onScroll(){
+    let current = '';
+    sections.forEach(sec=>{
+      const rect = sec.getBoundingClientRect();
+      if(rect.top <= 160) current = sec.id;
+    });
+    links.forEach(a=>{
+      a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+    });
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('load', onScroll);
+</script>
+</body>
+</html>
